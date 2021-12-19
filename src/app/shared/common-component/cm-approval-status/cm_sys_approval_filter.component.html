@@ -1,0 +1,28 @@
+<mat-form-field class="w-full">
+    <mat-label> {{ 'common.approval_status'|transloco}}</mat-label>
+    <mat-select
+            [value]="value"
+            (selectionChange)="onChange($event)">
+        <mat-option *ngFor="let unit of listData"
+                    [value]="unit.id">{{unit.name}}</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<!--    <mat-form-field   class="w-full"   class="w-full">-->
+<!--        <mat-label>-->
+<!--            {{ 'common.approval_status'|transloco}}-->
+<!--        </mat-label>-->
+<!--        <mat-select  [(ngModel)]="model" (ngModelChange)="modelChange.emit(model);setChose($event)"  #singleSelect>-->
+<!--            <mat-option>-->
+<!--                <ngx-mat-select-search [(ngModel)]="search" placeholderLabel="{{ 'search' | transloco }}"-->
+<!--                noEntriesFoundLabel="{{'no_data' | transloco }}"></ngx-mat-select-search>-->
+<!--            </mat-option>-->
+<!--            <mat-option *ngFor="let it of listData | filter : 'name' : search" [value]="it.id">-->
+<!--                {{it.name}}-->
+<!--            </mat-option>-->
+<!--        </mat-select>-->
+<!--    </mat-form-field>-->
+
+
+
+

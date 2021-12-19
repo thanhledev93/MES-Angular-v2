@@ -10,6 +10,10 @@ import {MatTableDataSource} from "@angular/material/table";
     selector     : 'cm_sys_approval_popup',
     templateUrl  : './cm_sys_approval_popup.component.html',
     encapsulation: ViewEncapsulation.None,
+
+    providers: [BaseComponentService,
+        {provide: 'controller', useValue: ''},
+    ],
 })
 export class cm_sys_approval_popupComponent extends BasePopupAddComponent
 {
@@ -45,8 +49,6 @@ export class cm_sys_approval_popupComponent extends BasePopupAddComponent
         this._baseComponentService.getListResolveData('sys_approval_config.ctr/getListUse/', {data: {menu: this.record.db.menu}})
             .subscribe((resp) => {
                 this.listData_sys_approval = resp;
-
-                console.log('record choose approval: ', this.record)
             });
     }
     ngOnInit(): void {

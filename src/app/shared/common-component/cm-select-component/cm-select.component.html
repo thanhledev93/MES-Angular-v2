@@ -1,4 +1,4 @@
-<mat-form-field class="w-full">
+<mat-form-field *ngIf="type=='single'" class="w-full">
     <mat-label> {{ label | transloco }} {{ labelAddString | transloco }}<span style="color: #f1416c; font-style: italic; font-size: small" *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
          (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
     </span>
@@ -13,3 +13,4 @@
         </mat-option>
     </mat-select>
 </mat-form-field>
+

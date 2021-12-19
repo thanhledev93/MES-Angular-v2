@@ -21,7 +21,9 @@
                 <div class="col-span-6">
                     <form [formGroup]="_form">
                         <cm-select label="NAV.sys_approval" formControlName="sys_approval" [listData]="listData_sys_approval"
-                                   [errorModel]="errorModel" [keyError]="'db.id_sys_approval_config'"  (objectChose)="dataSource.data = $event.list_item; item_sys_approval_config = $event" [callbackChange]="bind_sys_approval_config.bind(this)"></cm-select>
+                                   [errorModel]="errorModel" [keyError]="'db.id_sys_approval_config'"
+                                   (objectChose)="dataSource.data = $event.list_item; item_sys_approval_config = $event"
+                                   [callbackChange]="bind_sys_approval_config.bind(this)"></cm-select>
                     </form>
                 </div>
                 <div class="col-span-6">

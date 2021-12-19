@@ -5,6 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {lastIndexOf} from "lodash-es";
+import {FuseConfirmationService} from "../../../@fuse/services/confirmation";
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +13,7 @@ import {lastIndexOf} from "lodash-es";
 export class BaseComponentService
 {
     private baseURL = 'https://localhost:5001/';
-    private controller = this.route.url.slice(1, -6); // get Controller from Url "/sys_department_index" --> "sys_department"
+    // private controller = this.route.url.slice(1, -6); // get Controller from Url "/sys_department_index" --> "sys_department"
 
     // Private
     public _listData: BehaviorSubject<any[]> = new BehaviorSubject([]);
@@ -25,7 +26,8 @@ export class BaseComponentService
      * Constructor
      */
     constructor(private _httpClient: HttpClient,
-                private route: Router
+                private _fuseConfirmationService: FuseConfirmationService,
+                @Inject('controller') private controller: string
     ) {
     }
 
@@ -78,6 +80,7 @@ export class BaseComponentService
 
         console.log('getListData...');
         console.log('_filters: ', _filter)
+        console.log('controller: ', this.controller)
 
 
 
@@ -114,6 +117,7 @@ export class BaseComponentService
      */
     updateRecord(record: any, actionNum: number, controller: string = null): Observable<any>
     {
+        console.log('start controller: ', controller)
         let action: string = '';
 
         if (actionNum === 1) {
@@ -124,6 +128,8 @@ export class BaseComponentService
         if (!controller) {
             controller = this.controller;
         }
+
+        console.log('controller popup: ', controller)
 
         return this._httpClient.post<any>(this.baseURL + '' + controller + '.ctr/' + action + '/', {
             data: record,
@@ -221,5 +227,25 @@ export class BaseComponentService
                 ))
             ))
         );
+    }
+
+    confirmationDialog(title: string, message: string): void {
+        // Open the confirmation dialog
+        const confirmation = this._fuseConfirmationService.open({
+            title,
+            message,
+            actions: {
+                confirm: {
+                    show: false,
+                    label: "Remove",
+                    color: "warn"
+                },
+                cancel: {
+                    show: false,
+                    label: "Đóng"
+                }
+            },
+            dismissible: true
+        });
     }
 }

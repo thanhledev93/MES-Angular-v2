@@ -32,45 +32,6 @@ export abstract class BaseListComponent implements OnInit, AfterViewInit, OnDest
         {id: '1', name: this._translocoService.translate('system.use')},
         {id: '2', name: this._translocoService.translate('system.not_use')}
     ];
-    public list_approval_status = [
-        {
-            id: '-1',
-            name: this._translocoService.translate("common.all")
-        },
-        {
-            id: 1,
-            name: this._translocoService.translate("common.create")
-        },
-        {
-            id: 2,
-            name: this._translocoService.translate("common.waiting_approval")
-        },
-        {
-            id: 3,
-            name: this._translocoService.translate("common.approved")
-        },
-        {
-            id: 4,
-            name: this._translocoService.translate("common.cancel")
-        },
-        {
-            id: 5,
-            name: this._translocoService.translate("common.return")
-        },
-        {
-            id: 6,
-            name: this._translocoService.translate("common.waiting_me")
-        },
-        {
-            id: 7,
-            name: this._translocoService.translate("common.return_for_me")
-        },
-        {
-            id: 8,
-            name: this._translocoService.translate("common.record_closed")
-        }
-
-    ]
 
     // Filter if changed value
     public filters: any;
@@ -78,7 +39,9 @@ export abstract class BaseListComponent implements OnInit, AfterViewInit, OnDest
     // Data filter of API
     public _filter: any;
 
-    @ViewChild(MatPaginator) private _matPaginator: MatPaginator;
+    @ViewChild(MatPaginator, {
+        static: false
+    }) private _matPaginator: MatPaginator;
 
     public _unsubscribeAll: Subject<any> = new Subject<any>();
 

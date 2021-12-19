@@ -1,0 +1,164 @@
+<div class="flex flex-col w-160 max-h-screen -m-6 bg-gray-100 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+        <div class="text-lg font-medium">{{'line_up' | transloco}}</div>
+        <button
+                mat-icon-button
+                (click)="close()"
+                [tabIndex]="-1">
+            <mat-icon
+                    class="text-current"
+                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Budget details -->
+    <!-- Main -->
+    <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8 px-6 overflow-y-auto">
+        <div class="w-full mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">
+
+                <!--View mode-->
+                <ng-container *ngIf="actionEnum === 3">
+
+                    <div class="sm:col-span-6 bg-card shadow rounded-2xl p-6">
+                        <!-- Compose form -->
+                        <form [formGroup]="_form">
+                            <div class="grid sm:grid-cols-6 md:gap-x-6 gap-y-2 w-full">
+                                <div class="col-span-6">
+                                    <cm-input type="readonly"  label="NAV.sys_item" formControlName="sys_item_name"></cm-input>
+                                </div>
+
+                                <div class="col-span-6" *ngIf="_form.get('sys_item_specification_name').value">
+                                    <cm-input type="readonly"  label="NAV.sys_item_specification" formControlName="sys_item_specification_name"></cm-input>
+                                </div>
+
+                                <div class="col-span-6">
+                                    <cm-input type="readonly"  label="NAV.sys_warehouse" formControlName="warehouse_name"></cm-input>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="sm:col-span-6 bg-card shadow rounded-2xl p-6 mb-2">
+                        <!-- Compose form -->
+                        <form [formGroup]="_form">
+                            <ng-container *ngFor="let position of _form.get('warehouse_positions')['controls']; let i = index; let first = first; let last = last; trackBy: trackByFn">
+                                <div class="flex" [ngClass]="{'mb-5': !last}" formGroupName="db">
+
+                                    <mat-form-field class="fuse-mat-no-subscript flex-auto mr-5">
+                                        <mat-label *ngIf="first">{{ 'inventory.warehouse_position' | transloco }}</mat-label>
+                                        <input readonly matInput
+                                               [formControl]="position.get('warehouse_position_name')">
+                                    </mat-form-field>
+
+                                    <mat-form-field class="fuse-mat-no-subscript flex-auto">
+                                        <mat-label *ngIf="first">{{ 'quantity' | transloco }}</mat-label>
+                                        <input readonly type="number" matInput
+                                               [formControl]="position.get('quantity_unit_main')">
+                                    </mat-form-field>
+                                </div>
+
+                            </ng-container>
+                        </form>
+                    </div>
+
+                </ng-container>
+
+                <!--Edit mode-->
+                <ng-container *ngIf="actionEnum === 2 || actionEnum === 1">
+                    <div class="sm:col-span-6 bg-card shadow rounded-2xl p-6">
+                        <!-- Compose form -->
+                        <form [formGroup]="_form">
+                            <div class="grid sm:grid-cols-6 md:gap-x-6 gap-y-2 w-full">
+                                <div class="col-span-6">
+                                    <cm-input type="readonly"  label="NAV.sys_item" formControlName="sys_item_name"></cm-input>
+                                </div>
+
+                                <div class="col-span-6" *ngIf="_form.get('sys_item_specification_name').value">
+                                    <cm-input type="readonly"  label="NAV.sys_item_specification" formControlName="sys_item_specification_name"></cm-input>
+                                </div>
+
+                                <div class="col-span-6 md:col-span-4">
+                                    <cm-input type="readonly"  label="NAV.sys_warehouse" formControlName="warehouse_name"></cm-input>
+                                </div>
+
+                                <div class="col-span-6 md:col-span-2" formGroupName="db">
+                                    <cm-input [isDisabled]="true"  label="Chưa sắp xếp" formControlName="quantity_unit_main"></cm-input>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="sm:col-span-6 bg-card shadow rounded-2xl p-6">
+                        <!-- Compose form -->
+                        <form [formGroup]="_form">
+                            <ng-container *ngFor="let position of _form.get('warehouse_positions')['controls']; let i = index; let first = first; let last = last; trackBy: trackByFn">
+                                <div class="flex" formGroupName="db">
+                                    <mat-form-field class="max-w-90 w-full mr-6">
+                                        <mat-label  *ngIf="first"> {{ 'inventory.warehouse_position' | transloco }} </mat-label>
+                                        <mat-select [formControl]="position.get('id_warehouse_position')">
+                                            <mat-option *ngFor="let unit of list_position"
+                                                        [value]="unit.id">{{unit.name}}</mat-option>
+                                            <mat-option *ngIf="list_position?.length === 0">
+                                                Không có dữ liệu
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field class="fuse-mat-no-subscript flex-auto">
+                                        <mat-label *ngIf="first">{{ 'quantity' | transloco }}</mat-label>
+                                        <input type="number" matInput
+                                               [formControl]="position.get('quantity_unit_main')">
+                                    </mat-form-field>
+
+                                    <!-- Remove email -->
+                                    <ng-container  *ngIf="!(first && last)">
+                                        <div class="flex items-center w-10 pl-2"
+                                             [ngClass]="{'-mt-3': !first, 'mt-2': first}">
+                                            <button
+                                                    class="w-8 h-8 min-h-8"
+                                                    mat-icon-button
+                                                    matTooltip="Remove"
+                                                    (click)="removePositionField(i)">
+                                                <mat-icon
+                                                        class="icon-size-5"
+                                                        [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                            </button>
+                                        </div>
+                                    </ng-container>
+                                </div>
+
+                            </ng-container>
+
+                            <div class="col-span-6 group inline-flex items-center mt-2 -ml-4 px-4 rounded cursor-pointer" (click)="addEmailField()">
+                                <mat-icon
+                                        class="icon-size-5"
+                                        [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
+                                <span class="ml-2 font-medium text-secondary group-hover:underline">Thêm vị trí</span>
+                            </div>
+                        </form>
+                    </div>
+                </ng-container>
+
+                <!-- Actions -->
+                <div class="sm:col-span-6" *ngIf="actionEnum !== 3">
+                    <div class="flex col-span-6 sm:items-center justify-end">
+                        <div class="flex items-center sm:mt-0">
+                            <!-- Send -->
+                            <button [disabled]="!_form.valid"
+                                    (click)="save()"
+                                    mat-flat-button
+                                    [color]="'primary'">
+                                Lưu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

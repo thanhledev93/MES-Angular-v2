@@ -1,37 +1,24 @@
 import {
     Component,
-    OnInit,
     ViewEncapsulation,
-    Input,
-    EventEmitter,
-    Output,
-    OnDestroy,
     Inject,
-    ViewChild,
-    AfterViewInit
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import Swal from 'sweetalert2';
-import { ReplaySubject, Subject } from 'rxjs';
-import { filter, tap, takeUntil, debounceTime, map, delay } from 'rxjs/operators';
+import { FormBuilder} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
-import { ThemePalette } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-import { ActivatedRoute } from '@angular/router';
-import { FuseNavigationService } from '@fuse/components/navigation';
 import {BasePopupAddComponent} from "../../base-component/base-popupAdd.component";
 import {BaseComponentService} from "../../base-component/base-component.service";
 import {TranslocoService} from "@ngneat/transloco";
-import {DOCUMENT} from "@angular/common";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 @Component({
     selector: 'cm_sys_approval_status_popup',
     templateUrl: './cm_sys_approval_status_popup.component.html',
     styleUrls  : ['./popup.component.scss'],
     encapsulation: ViewEncapsulation.None,
+
+    providers: [BaseComponentService,
+        {provide: 'controller', useValue: ''},
+    ],
 })
 export class cm_sys_approval_status_popupComponent extends BasePopupAddComponent{
     public record: any;
@@ -71,7 +58,6 @@ export class cm_sys_approval_status_popupComponent extends BasePopupAddComponent
                 this.dataSource.data = resp.list_step;
                 this.record = resp;
 
-                console.log(this.record.list_item)
             });
     }
 

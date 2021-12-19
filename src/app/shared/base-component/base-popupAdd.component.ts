@@ -1,5 +1,4 @@
 import {
-    ChangeDetectorRef,
     Directive,
     OnDestroy,
     OnInit
@@ -21,53 +20,12 @@ export abstract class BasePopupAddComponent implements OnInit, OnDestroy {
     public _form: FormGroup;
     public _formItem: FormGroup;
     public record: any;
-
-    public _changeDetectorRef: ChangeDetectorRef;
     public _filter: any;
 
     public searching: boolean = false;
 
     public _unsubscribeAll: Subject<any> = new Subject<any>();
 
-    public list_approval_status = [
-        {
-            id: '-1',
-            name: this._translocoService.translate("common.all")
-        },
-        {
-            id: 1,
-            name: this._translocoService.translate("common.create")
-        },
-        {
-            id: 2,
-            name: this._translocoService.translate("common.waiting_approval")
-        },
-        {
-            id: 3,
-            name: this._translocoService.translate("common.approved")
-        },
-        {
-            id: 4,
-            name: this._translocoService.translate("common.cancel")
-        },
-        {
-            id: 5,
-            name: this._translocoService.translate("common.return")
-        },
-        {
-            id: 6,
-            name: this._translocoService.translate("common.waiting_me")
-        },
-        {
-            id: 7,
-            name: this._translocoService.translate("common.return_for_me")
-        },
-        {
-            id: 8,
-            name: this._translocoService.translate("common.record_closed")
-        }
-
-    ]
 
     public type_add = [
         {

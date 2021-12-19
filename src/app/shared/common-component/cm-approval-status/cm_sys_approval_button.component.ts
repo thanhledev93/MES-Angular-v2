@@ -12,6 +12,10 @@ import { cm_sys_approval_popupComponent } from './cm_sys_approval_popup.componen
     templateUrl: './cm_sys_approval_button.component.html',
     encapsulation: ViewEncapsulation.None,
 
+    providers: [BaseComponentService,
+        {provide: 'controller', useValue: ''},
+    ],
+
 })
 export class cm_sys_approval_buttonComponent implements OnInit {
     @Input() id_sys_approval: any;
@@ -53,9 +57,6 @@ export class cm_sys_approval_buttonComponent implements OnInit {
 
     }
     ngOnInit(): void {
-        console.log('currentUser: ', this.currentUser)
-        console.log('model.status_finish: ', this.model.status_finish)
-
         this.record.db.menu = this.menu;
         this.record.db.id_record = this.id_record;
         this.record.db.create_by_record = this.create_by;

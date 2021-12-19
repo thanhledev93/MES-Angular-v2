@@ -978,7 +978,7 @@
         "sys_department": "Phòng ban",
         "sys_job_title": "Chức danh",
         "inventory_production_item_schedule": "Lịch nhập sản xuất",
-        "inventory_need_supplier_schedule": "Lịch cung cấp nguyên liệu sản xuất",
+        "inventory_need_supplier_schedule": "Lịch cấp phát vật tư",
         "production_order_set_up_schedule": "Thiết lập lịch sản xuất",
         "production_report_supplier": "Cung ứng sản xuất",
         "sys_cost_type": "Loại chi phí",

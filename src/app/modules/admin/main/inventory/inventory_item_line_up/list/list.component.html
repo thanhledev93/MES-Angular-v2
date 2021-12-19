@@ -10,18 +10,9 @@
 
         <!-- Title -->
         <div>
-            <div class="text-2xl font-extrabold tracking-tight leading-none">{{ 'NAV.inventory_receiving' | transloco }}</div>
+            <div class="text-2xl font-extrabold tracking-tight leading-none py-3">{{ 'NAV.inventory_item_line_up' | transloco }}</div>
         </div>
-        <!-- Actions -->
-        <div class="mt-5 w-full sm:mt-0 sm:w-auto">
-            <button
-                    mat-flat-button
-                    [color]="'primary'"
-                    (click)="openDialogComponent()">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">{{ 'add' | transloco }}</span>
-            </button>
-        </div>
+
     </div>
     <div class="flex-auto h-full bg-gray-100 bg-card dark:bg-transparent px-6 overflow-y-scroll">
         <!-- Main -->
@@ -34,63 +25,31 @@
                         <div class="flex flex-col flex-auto mt-2 overflow-x-auto p-6">
                             <form [formGroup]="_form">
                                 <div class="grid sm:grid-cols-6 gap-x-5 w-full">
-                                    <div class="sm:col-span-6 md:col-span-4">
+                                    <div class="sm:col-span-6 md:col-span-2">
                                         <cm-input type="text"
                                                   formControlName="search"
                                                   class="w-full"
-                                                  label="Tìm kiếm"
+                                                  label="search"
                                                   icon="heroicons_solid:search"
                                                   placeholder="Nhập vào số phiếu"
                                                   [callbackChange]="filterByQuery.bind(this)">
                                         </cm-input>
                                     </div>
                                     <div class="sm:col-span-6 md:col-span-2">
-                                        <cm_sys_approval_filter class="w-100"
-                                                   formControlName="approval_status"
-                                                   [callbackChange]="filterByApprovalStatus.bind(this)">
-                                        </cm_sys_approval_filter>
+                                        <cm-select label="NAV.sys_receiving_type"
+                                                   [listData]="list_sys_receiving_type"
+                                                   formControlName="receiving_type"
+                                                   [callbackChange]="filterByReceiving_type.bind(this)">
+                                        </cm-select>
+                                    </div>
+                                    <div class="sm:col-span-6 md:col-span-2">
+                                        <cm-select label="inventory.line_up_status"
+                                                   [listData]="list_line_up_status"
+                                                   formControlName="line_up_status"
+                                                   [callbackChange]="filterByLineUpStatus.bind(this)">
+                                        </cm-select>
                                     </div>
                                 </div>
-
-                                <mat-accordion hideToggle>
-                                <mat-expansion-panel [expanded]="expand" style="box-shadow: none !important"
-                                                     (opened)="panelOpenState = true"
-                                                     (closed)="panelOpenState = false">
-                                    <mat-expansion-panel-header class="pl-0">
-                                        <button
-                                                (click)="toggleAdvanceSearch()">
-                                            <span style="color: #009ef7; font-weight: 500">{{panelOpenState ? 'Ẩn tìm kiếm nâng cao' : 'Tìm kiếm nâng cao'}}</span>
-                                        </button>
-                                    </mat-expansion-panel-header>
-                                    <div style="border-bottom: 1px solid #eff2f5; border-bottom-style: dashed; border-bottom-color: #e4e6ef"></div>
-                                        <div class="grid sm:grid-cols-6 gap-x-5 w-full mt-5">
-                                            <div class="sm:col-span-6 md:col-span-2">
-                                                <cm-select label="Nguồn"
-                                                           [listData]="list_type"
-                                                           formControlName="type"
-                                                           [callbackChange]="filterByType.bind(this)">
-                                                </cm-select>
-                                            </div>
-
-                                            <div class="sm:col-span-6 md:col-span-2">
-                                                <cm-select label="Kho"
-                                                           [listData]="list_sys_warehouse"
-                                                           formControlName="sys_warehouse"
-                                                           [callbackChange]="filterByWarehouse.bind(this)">
-                                                </cm-select>
-                                            </div>
-
-                                            <div class="sm:col-span-6 md:col-span-2">
-                                                <cm-select label="Loại phiếu nhập"
-                                                           [listData]="list_sys_receiving_type"
-                                                           formControlName="receiving_type"
-                                                           [callbackChange]="filterByReceivingType.bind(this)">
-                                                </cm-select>
-                                            </div>
-                                        </div>
-
-                                </mat-expansion-panel>
-                            </mat-accordion>
                             </form>
                         </div>
                     </div>
@@ -122,24 +81,18 @@
                                                         <mat-icon
                                                                 [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
                                                         <mat-menu #headerMenu>
-                                                            <button mat-menu-item (click)="openDialogComponent(data, i, 3)">
+                                                            <button mat-menu-item *ngIf="data.db.line_up_status !== 1"
+                                                                    (click)="openDialogComponent(data, i, 3)">
                                                                 <mat-icon [svgIcon]="'heroicons_outline:eye'"
                                                                           class="icon-size-5"></mat-icon>
                                                                 {{'view' | transloco}}
                                                             </button>
-
-                                                            <button *ngIf="data.db.type == 2 && (data.approval.status_finish == 5 || data.approval.status_finish == 1)"
-                                                                    mat-menu-item (click)="openDialogComponent(data, i, 2)">
-                                                                <mat-icon [svgIcon]="'heroicons_outline:pencil-alt'"
-                                                                          class="icon-size-5"></mat-icon>
-                                                                {{'system.edit' | transloco}}
-                                                            </button>
-                                                            <button  *ngIf="data.approval.status_finish == 5 || data.approval.status_finish == 1"
-                                                                mat-menu-item (click)="deleteRecord(data.db.id)" >
-                                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"
+                                                            <button  *ngIf="data.db.line_up_status==1"
+                                                                     mat-menu-item (click)="openDialogComponent(data,i, 2)">
+                                                                <mat-icon [svgIcon]="'heroicons_outline:collection'"
                                                                           class="icon-size-5">
                                                                 </mat-icon>
-                                                                {{'system.delete' | transloco}}
+                                                                {{'line_up' | transloco}}
                                                             </button>
                                                         </mat-menu>
                                                     </button>
@@ -151,124 +104,103 @@
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
                                             *matHeaderCellDef>
-                                            Số phiếu
+                                            {{ 'so_phieu' | transloco }}
                                         </th>
                                         <td
                                                 mat-cell
                                                 *matCellDef="let data">
                                                 <span class="font-medium text-md text-secondary whitespace-nowrap">
-                                                    {{data.db.name}}
+                                                    {{data.inventory_receiving_name}}
                                                 </span>
                                         </td>
                                     </ng-container>
 
-                                    <ng-container matColumnDef="status_finish">
+                                    <ng-container matColumnDef="sys_warehouse">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
                                             *matHeaderCellDef>
-                                            Trạng thái duyệt
+                                            {{ 'NAV.sys_warehouse' | transloco }}
                                         </th>
                                         <td mat-cell
                                             *matCellDef="let data">
-                                            <cm-approval-status [model]="data.approval"></cm-approval-status>
+                                            {{ data.warehouse_name }}
                                         </td>
                                     </ng-container>
 
-                                    <ng-container matColumnDef="sys_warehouse_name">
+                                    <ng-container matColumnDef="sys_item">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
                                             *matHeaderCellDef>
-                                            Kho
+                                            {{'NAV.sys_item' | transloco}}
                                         </th>
                                         <td
                                                 mat-cell
                                                 *matCellDef="let data">
-                                            {{data.sys_warehouse_name}}
+                                            {{ data.sys_item_name}}
                                         </td>
                                     </ng-container>
 
-                                    <ng-container matColumnDef="type">
+                                    <ng-container matColumnDef="sys_item_specification">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
                                             *matHeaderCellDef>
-                                            Nguồn
+                                            {{ 'NAV.sys_item_specification' | transloco }}
                                         </th>
                                         <td
                                                 mat-cell
                                                 *matCellDef="let data">
-                                            {{list_type[data.db.type].name}}
+                                            {{data.sys_item_specification_name}}
                                         </td>
                                     </ng-container>
 
-                                    <ng-container matColumnDef="sys_receiving_type_name">
+                                    <ng-container matColumnDef="quantity">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
                                             *matHeaderCellDef>
-                                            Loại phiếu nhập
+                                            {{ 'quantity' | transloco }}
                                         </th>
                                         <td
                                                 mat-cell
                                                 *matCellDef="let data">
-                                            {{data.sys_receiving_type_name}}
-                                        </td>
-                                    </ng-container>
-
-                                    <ng-container matColumnDef="create_date">
-                                        <th class="text-md font-semibold text-secondary"
-                                            mat-header-cell
-                                            *matHeaderCellDef>
-                                            Ngày lập
-                                        </th>
-                                        <td
-                                                mat-cell
-                                                *matCellDef="let data">
-                                            {{data.db.create_date | date: 'dd/MM/yyyy HH:mm'}}
-                                        </td>
-                                    </ng-container>
-
-                                    <ng-container matColumnDef="business_purchase_order_name">
-                                        <th class="text-md font-semibold text-secondary"
-                                            mat-header-cell
-                                            *matHeaderCellDef>
-                                            Đơn hàng mua
-                                        </th>
-                                        <td
-                                                mat-cell
-                                                *matCellDef="let data">
-                                        <span class="font-medium text-md text-secondary whitespace-nowrap">
-                                            {{data.business_purchase_order_name }}
-                                        </span>
-                                        </td>
-                                    </ng-container>
-
-                                    <ng-container matColumnDef="production_order_name">
-                                        <th class="text-md font-semibold text-secondary"
-                                            mat-header-cell
-                                            *matHeaderCellDef>
-                                            Lệnh sản xuất
-                                        </th>
-                                        <td
-                                                mat-cell
-                                                *matCellDef="let data">
-                                        <span class="pr-6 font-medium text-md text-secondary whitespace-nowrap">
-                                             {{data.production_order_name }}
-                                        </span>
-
+                                            {{data.db.quantity_unit_main | number }}
                                         </td>
                                     </ng-container>
 
                                     <ng-container matColumnDef="note">
                                         <th class="text-md font-semibold text-secondary"
-                                                mat-header-cell
-                                                *matHeaderCellDef>
-                                            Ghi chú
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'note' | transloco }}
                                         </th>
                                         <td
                                                 mat-cell
                                                 *matCellDef="let data">
-                                            <span class="whitespace-nowrap">
-                                                {{data.db.note }}
-                                            </span>
+                                        <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                            {{data.db.note }}
+                                        </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="line_up_status">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'inventory.line_up_status' | transloco }}
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                            <div class="" *ngIf="data.db.line_up_status==1">
+                                        <span
+                                                class="w-max py-0.5 px-3 rounded-full text-sm font-semibold text-pink-800 bg-pink-100 dark:text-pink-50 dark:bg-pink-500"
+                                                transloco="inventory.not_line_up"></span>
+                                            </div>
+                                            <div class="" *ngIf="data.db.line_up_status==2">
+                                        <span
+                                                class="w-max py-0.5 px-3 rounded-full text-sm font-semibold text-green-800 bg-green-100 dark:text-green-50 dark:bg-green-500"
+                                                transloco="inventory.lined_up"></span>
+
+                                            </div>
 
                                         </td>
                                     </ng-container>
@@ -295,6 +227,7 @@
                             <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">Không có dữ liệu</div>
                         </ng-template>
                     </div>
+
                 </div>
             </div>
         </div>

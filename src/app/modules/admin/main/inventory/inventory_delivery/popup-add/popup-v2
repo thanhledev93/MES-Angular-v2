@@ -1,0 +1,584 @@
+    currentStep = 0;
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Scrolls the current step element from
+     * sidenav into the view. This only happens when
+     * previous/next buttons pressed as we don't want
+     * to change the scroll position of the sidebar
+     * when the user actually clicks around the sidebar.
+     *
+     * @private
+     */
+    private _scrollCurrentStepElementIntoView(): void
+    {
+        // Wrap everything into setTimeout so we can make sure that the 'current-step' class points to correct element
+        setTimeout(() => {
+
+            // Get the current step element and scroll it into view
+            const currentStepElement = this._document.getElementsByClassName('current-step')[0];
+            if ( currentStepElement )
+            {
+                currentStepElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block   : 'start'
+                });
+            }
+        });
+    }
+
+
+    /**
+     * Go to given step
+     *
+     * @param step
+     */
+    goToStep(step: number): void
+    {
+        console.log('this.currentStep: ', step)
+
+        // Set the current step
+        this.currentStep = step;
+
+        console.log('courseSteps: ', this.courseSteps.selectedIndex )
+
+        // Go to the step
+        this.courseSteps.selectedIndex = this.currentStep;
+
+    }
+    saveAndNext() {
+        // Save and Gui duyet
+        this.save();
+
+        // Return if we already on the last step
+        if ( this.currentStep === 3 - 1 )
+        {
+            return;
+        }
+
+        // Go to step
+        this.goToStep(this.currentStep + 1);
+
+        // Scroll the current step selector from sidenav into view
+        this._scrollCurrentStepElementIntoView();
+    }
+    goToNextStep() {
+
+        // Return if we already on the last step
+        if ( this.currentStep === 3 - 1 )
+        {
+            return;
+        }
+
+        // Go to step
+        this.goToStep(this.currentStep + 1);
+
+        // Scroll the current step selector from sidenav into view
+        this._scrollCurrentStepElementIntoView();
+    }
+
+    goToPreviousStep() {
+        // Return if we already on the first step
+        if ( this.currentStep === 0 )
+        {
+            return;
+        }
+
+        // Go to step
+        this.goToStep(this.currentStep - 1);
+
+        // Scroll the current step selector from sidenav into view
+        this._scrollCurrentStepElementIntoView();
+    }
+
+
+    selectedApproval(change: MatSelectChange) {
+        this.sys_approval_config = this.list_sys_approval_config.filter(d => d.id === change.value)[0];
+        console.log('change: ', this.sys_approval_config)
+    }
+
+
+<!--Edit mode-->
+<ng-container *ngIf="actionEnum === 2 || actionEnum === 1">
+    <div class="flex flex-col -m-6  bg-card dark:bg-transparent">
+
+        <!-- Header -->
+        <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+            <div class="text-lg font-medium">Phiếu nhập</div>
+            <button
+                    mat-icon-button
+                    (click)="close()"
+                    [tabIndex]="-1">
+                <mat-icon
+                        class="text-current"
+                        [svgIcon]="'heroicons_outline:x'"></mat-icon>
+            </button>
+        </div>
+
+        <!-- Budget details -->
+        <!-- Main -->
+        <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8 px-6 overflow-y-auto">
+            <mat-drawer-container class="bg-card">
+                <!-- Drawer -->
+                <mat-drawer
+                        class="max-w-100 dark:bg-gray-900 pr-5"
+                        [autoFocus]="false"
+                        [mode]="'side'"
+                        [opened]="true"
+                        #matDrawer>
+
+                    <!-- Steps -->
+                    <div class="p-2">
+                        <ol>
+                            <ng-container *ngFor="let step of steps; let last = last">
+                                <li
+                                        class="relative group py-6"
+                                        [class.current-step]="step.order === currentStep">
+                                    <ng-container *ngIf="!last">
+                                        <div
+                                                class="absolute top-6 left-4 w-0.5 h-full -ml-px"
+                                                [ngClass]="{'bg-primary': step.order < currentStep,
+                                                'bg-gray-300 dark:bg-gray-600': step.order >= currentStep}"></div>
+                                    </ng-container>
+                                    <div
+                                            class="relative flex items-start cursor-pointer">
+                                        <!--                                        (click)="goToStep(step.order)">-->
+                                        <div
+                                                class="flex flex-0 items-center justify-center w-8 h-8 rounded-full ring-2 ring-inset ring-transparent bg-card dark:bg-default"
+                                                [ngClass]="{'bg-primary dark:bg-primary text-on-primary group-hover:bg-primary-800': step.order < currentStep,
+                                                'ring-primary': step.order === currentStep,
+                                                'ring-gray-300 dark:ring-gray-600 group-hover:ring-gray-400': step.order > currentStep}">
+                                            <!-- Check icon, show if the step is completed -->
+                                            <ng-container *ngIf="step.order < currentStep">
+                                                <mat-icon
+                                                        class="icon-size-5 text-current"
+                                                        [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                                            </ng-container>
+                                            <!-- Step order, show if the step is the current step -->
+                                            <ng-container *ngIf="step.order === currentStep">
+                                                <div class="text-md font-semibold text-primary dark:text-primary-500">{{step.order + 1}}</div>
+                                            </ng-container>
+                                            <!-- Step order, show if the step is not completed -->
+                                            <ng-container *ngIf="step.order > currentStep">
+                                                <div class="text-md font-semibold text-hint group-hover:text-secondary">{{step.order + 1}}</div>
+                                            </ng-container>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="font-medium leading-4">{{step.title}}</div>
+                                            <div class="mt-1.5 text-md leading-4 text-secondary">{{step.subtitle}}</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ng-container>
+                        </ol>
+                    </div>
+
+                </mat-drawer>
+
+            <!-- Drawer content -->
+            <mat-drawer-content class="flex flex-col min-w-200">
+                <!-- Main -->
+                <div
+                        class="flex-auto overflow-y-auto"
+                        cdkScrollable>
+
+                    <!-- Steps -->
+                    <mat-tab-group class="inventoryTabGroup"
+                            [animationDuration]="'200'"
+                            #courseSteps>
+<!--                            Phiếu-->
+                            <mat-tab>
+                                <ng-template matTabContent>
+                                        <form [formGroup]="_form"
+                                              class="flex flex-col flex-auto overflow-y-auto ml-3">
+
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Số phiếu</mat-label>
+                                                    <input matInput
+                                                           [formControlName]="'name'"
+                                                           [spellcheck]="false">
+                                                </mat-form-field>
+
+                                                <mat-form-field class="fuse-mat-no-subscript w-full ml-3">
+                                                    <mat-label>Ngày nhập</mat-label>
+                                                    <input
+                                                            matInput
+                                                            [matDatepicker]="created_date_Datepicker"
+                                                            [formControlName]="'import_date'">
+                                                    <mat-datepicker-toggle
+                                                            matSuffix
+                                                            [for]="created_date_Datepicker">
+                                                    </mat-datepicker-toggle>
+                                                    <mat-datepicker #created_date_Datepicker></mat-datepicker>
+                                                </mat-form-field>
+
+                                            </div>
+
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="mt-5 sm:mt-0 w-full">
+                                                    <mat-label>Kho</mat-label>
+                                                    <mat-select [formControlName]="'sys_warehouse_name'"
+                                                                [value]="'-1'">
+                                                        <!--                                            (selectionChange)="filterByWarehouse($event)">-->
+                                                        <mat-option *ngFor="let data of list_sys_warehouse"
+                                                                    [value]="data.id">{{data.name}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                                <mat-form-field class="mt-5 sm:mt-0 ml-3 w-full">
+                                                    <mat-label>Loại phiếu nhập</mat-label>
+                                                    <mat-select
+                                                            [formControlName]="'sys_receiving_type_name'"
+                                                            [value]="'-1'">
+                                                        <!--                                            (selectionChange)="filterByReceivingType($event)">-->
+                                                        <mat-option *ngFor="let data of list_sys_receiving_type"
+                                                                    [value]="data.id">{{data.name}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+
+                                            </div>
+
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Nguồn</mat-label>
+                                                    <input matInput readonly
+                                                           [spellcheck]="false" [value]="list_type[record.db.type].name">
+                                                </mat-form-field>
+
+                                                <mat-form-field class="w-full ml-3">
+                                                    <mat-label>Đối tượng</mat-label>
+                                                    <input matInput
+                                                           [formControlName]="'object_'"
+                                                           [spellcheck]="false">
+                                                </mat-form-field>
+
+                                            </div>
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="fuse-mat-textarea fuse-mat-no-subscript w-full">
+                                                    <mat-label>Ghi chú</mat-label>
+                                                    <mat-icon
+                                                            matPrefix
+                                                            class="hidden sm:flex icon-size-5"
+                                                            [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                                                    <textarea
+                                                            matInput
+                                                            [formControlName]="'note'"
+                                                            [rows]="1"
+                                                            [spellcheck]="false"
+                                                            matTextareaAutosize></textarea>
+                                                </mat-form-field>
+                                            </div>
+                                        </form>
+                                </ng-template>
+                            </mat-tab>
+
+<!--                            Mặt hàng-->
+                            <mat-tab>
+                                <ng-template matTabContent>
+                                    <form [formGroup]="_formItem">
+                                    <mat-tab-group class="itemTabGroup" (selectedIndexChange)="resetFormItem($event)">
+                                        <mat-tab label="Theo đơn vị tính chính" class="flex flex-col flex-auto overflow-y-auto">
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="mt-5 sm:mt-0 w-full">
+                                                    <mat-label>Mặt hàng</mat-label>
+                                                    <mat-select [formControlName]="'item'" (selectionChange)="bind_data_item_chose($event)">
+                                                        <mat-option>
+                                                            <ngx-mat-select-search [searching]="searching" [formControlName]="'itemListFilter'" placeholderLabel="Tìm kiếm" noEntriesFoundLabel="{{'Không tìm thấy'}}"></ngx-mat-select-search>
+                                                        </mat-option>
+                                                        <mat-option *ngFor="let item of filteredItem | async" [value]="item.id">
+                                                            {{item.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+
+                                                <mat-form-field class="w-100 ml-3">
+                                                    <mat-label>Số lượng</mat-label>
+                                                    <input  type="number"
+                                                            [formControlName]="'quantity'"
+                                                            matInput class="text-right"
+                                                            [spellcheck]="false">
+                                                </mat-form-field>
+
+                                            </div>
+
+                                            <!-- Actions -->
+                                            <div class="flex col-span-6 sm:items-center justify-end mt-4">
+
+                                                <div class="flex items-center sm:mt-0">
+
+                                                    <!-- Send -->
+                                                    <button (click)="addDetail()"
+                                                            mat-flat-button
+                                                            [color]="'primary'">
+                                                        Thêm
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </mat-tab>
+                                        <mat-tab label="Theo quy cách">
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="mt-5 sm:mt-0 w-full">
+                                                    <mat-label>Mặt hàng</mat-label>
+                                                    <mat-select [formControlName]="'item'" (selectionChange)="bind_data_item_chose($event)">
+                                                        <mat-option>
+                                                            <ngx-mat-select-search [searching]="searching" [formControlName]="'itemListFilter'" placeholderLabel="Tìm kiếm" noEntriesFoundLabel="{{'Không tìm thấy'}}"></ngx-mat-select-search>
+                                                        </mat-option>
+                                                        <mat-option *ngFor="let item of filteredItem | async" [value]="item.id">
+                                                            {{item.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+
+                                                <mat-form-field class="mt-5 sm:mt-0 w-full ml-3">
+                                                    <mat-label>Quy cách</mat-label>
+                                                    <mat-select [formControlName]="'specification'">
+                                                        <mat-option>
+                                                            <ngx-mat-select-search [searching]="searching" [formControlName]="'specificationListFilter'" placeholderLabel="Tìm kiếm" noEntriesFoundLabel="{{'Không tìm thấy'}}"></ngx-mat-select-search>
+                                                        </mat-option>
+                                                        <mat-option *ngFor="let item of filteredSpecification | async" [value]="item.id">
+                                                            {{item.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+
+                                                <mat-form-field class="w-100 ml-3">
+                                                    <mat-label>Số lượng</mat-label>
+                                                    <input  type="number"
+                                                            matInput class="text-right"
+                                                            [spellcheck]="false"
+                                                            [formControlName]="'quantity'">
+                                                </mat-form-field>
+
+                                            </div>
+                                            <!-- Actions -->
+                                            <div class="flex col-span-6 sm:items-center justify-end mt-4">
+
+                                                <div class="flex items-center sm:mt-0">
+
+                                                    <!-- Send -->
+                                                    <button (click)="addDetail()"
+                                                            mat-flat-button
+                                                            [color]="'primary'">
+                                                        Thêm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </mat-tab>
+                                        <mat-tab label="Theo đơn vị tính khác">
+                                            <div class="flex flex-row justify-between">
+                                                <mat-form-field class="mt-5 sm:mt-0 w-full">
+                                                    <mat-label>Mặt hàng</mat-label>
+                                                    <mat-select [formControlName]="'item'" (selectionChange)="bind_data_item_chose($event)">
+                                                        <mat-option>
+                                                            <ngx-mat-select-search [searching]="searching" [formControlName]="'itemListFilter'" placeholderLabel="Tìm kiếm" noEntriesFoundLabel="{{'Không tìm thấy'}}"></ngx-mat-select-search>
+                                                        </mat-option>
+                                                        <mat-option *ngFor="let item of filteredItem | async" [value]="item.id">
+                                                            {{item.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+
+                                                <mat-form-field class="mt-5 sm:mt-0 w-full ml-3">
+                                                    <mat-label>Đơn vị tính khác</mat-label>
+                                                    <mat-select
+                                                            [value]="'-1'" [formControlName]="'otherUnit'">
+                                                        <!--                                                (selectionChange)="filterByWarehouse($event)">-->
+                                                        <mat-option *ngFor="let unit of listData_other_unit"
+                                                                    [value]="unit.id">{{unit.name}}</mat-option>
+                                                        <mat-option *ngIf="listData_other_unit.length === 0">
+                                                            Không có dữ liệu
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+
+                                                <mat-form-field class="w-100 ml-3">
+                                                    <mat-label>Số lượng</mat-label>
+                                                    <input type="number" matInput class="text-right" [formControlName]="'quantity'"
+                                                           [spellcheck]="false">
+                                                </mat-form-field>
+
+                                            </div>
+
+                                            <!-- Actions -->
+                                            <div class="flex col-span-6 sm:items-center justify-end mt-4">
+
+                                                <div class="flex items-center sm:mt-0">
+
+                                                    <!-- Send -->
+                                                    <button (click)="addDetail()"
+                                                            mat-flat-button
+                                                            [color]="'primary'">
+                                                        Thêm
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </mat-tab>
+                                    </mat-tab-group>
+                                    </form>
+                                    <!-- Table -->
+                                    <nz-table #basicTable1 [nzData]="record.list_item" nzBordered [nzPageSize]="5"  >
+                                        <thead>
+                                        <tr>
+                                            <th>Chức năng</th>
+                                            <th>Mặt hàng</th>
+                                            <th>Quy cách</th>
+                                            <th>Số lượng</th>
+                                            <th>Loại thêm</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let item of record.list_item; index as i">
+                                            <td>
+                                                <button (click)="deleteDetail(i)"
+                                                        [color]="'warn'"
+                                                        mat-icon-button>
+                                                    <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                                </button>
+                                            </td>
+                                            <td>{{ item.sys_item_name }}</td>
+                                            <td>{{item.sys_item_specification_name  }}</td>
+                                            <ng-container *ngIf="item.db.type_add === 3; else unitMain">
+                                                <td>{{ item.db.quantity_unit_main }} {{ item.sys_unit_main_name }} <--
+                                                    {{item.db.quantity }} {{ item.sys_unit_name }}
+                                                </td>
+                                            </ng-container>
+                                            <ng-template #unitMain>
+                                                <td>{{ item.db.quantity_unit_main }} {{ item.sys_unit_main_name }} </td>
+                                            </ng-template>
+                                            <td>
+                                                <div *ngIf="item.db.type_add==1">
+                                                    Theo đơn vị tính chính
+                                                </div>
+                                                <div *ngIf="item.db.type_add==2">
+                                                    Theo quy cách
+                                                </div>
+                                                <div *ngIf="item.db.type_add==3">
+                                                    Theo đơn vị tính khác
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+
+                                </ng-template>
+
+                            </mat-tab>
+
+<!--                            Gui duyet-->
+                            <mat-tab>
+                                <ng-template matTabContent>
+                                    <form [formGroup]="_form"
+                                          class="flex flex-col flex-auto overflow-y-auto ">
+
+                                        <div class="flex flex-row justify-between">
+                                            <mat-form-field class="mt-5 sm:mt-0 w-full">
+                                                <mat-label>Quy trình duyệt</mat-label>
+                                                <mat-select (selectionChange)="selectedApproval($event)">
+                                                    <mat-option *ngFor="let data of list_sys_approval_config"
+                                                                [value]="data.id">{{data.name}}</mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                    </form>
+                                    <nz-table #basicTable1 [nzData]="sys_approval_config.list_item" nzBordered [nzPageSize]="5"  >
+                                        <thead>
+                                        <tr>
+                                            <th>Bước duyệt số</th>
+                                            <th>Tên bước</th>
+                                            <th>Người duyệt</th>
+                                            <th>Thời gian (giờ)</th>
+                                            <th>Ghi chú</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let data of sys_approval_config.list_item; index as i">
+                                                <td>{{ data.db.step_num }}</td>
+                                                <td>{{ data.db.name }}</td>
+                                                <td>{{ data.user_name }}</td>
+                                                <td>{{ data.db.duration_hours }}</td>
+                                                <td>{{ data.db.note }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </ng-template>
+                            </mat-tab>
+                    </mat-tab-group>
+
+                    <div class="flex col-span-6 sm:items-center justify-between mt-4 px-6">
+
+                        <div class="flex items-center sm:mt-0">
+                            <!-- Send -->
+                            <button (click)="goToPreviousStep()" *ngIf="currentStep !== 0"
+                                    mat-flat-button>
+                                Trở lại
+                            </button>
+                        </div>
+
+                        <div class="flex items-center sm:mt-0">
+                            <!-- Send -->
+                            <button *ngIf="currentStep === 2" (click)="sendApproval()"
+                                    mat-flat-button
+                                    [color]="'primary'">
+                                Gửi duyệt
+                            </button>
+
+                            <button (click)="close()"
+                                    *ngIf="currentStep === 2" class="ml-3"
+                                    mat-flat-button
+                                    [color]="'primary'">
+                                Hoàn tất
+                            </button>
+
+                            <!-- Send -->
+                            <button *ngIf="currentStep === 0"
+                                    (click)="goToNextStep()"
+                                    mat-flat-button
+                                    [color]="'primary'">
+                                Tiếp
+                            </button>
+
+                            <!-- Send -->
+                            <button *ngIf="currentStep === 1"
+                                    (click)="saveAndNext()"
+                                    mat-flat-button
+                                    [color]="'primary'">
+                                Lưu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-drawer-content>
+            </mat-drawer-container>
+
+<!--            <div class="w-full mx-auto">-->
+<!--                <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">-->
+<!--                    <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl ">-->
+<!--                        &lt;!&ndash; Compose form &ndash;&gt;-->
+<!--                        a-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; Actions &ndash;&gt;-->
+<!--                    <div class="flex col-span-6 sm:items-center justify-end mt-4 mb-6">-->
+
+<!--                        <div class="flex items-center sm:mt-0 mb-6">-->
+
+<!--                            &lt;!&ndash; Send &ndash;&gt;-->
+<!--                            <button-->
+<!--                                    (click)="save()"-->
+<!--                                    mat-flat-button-->
+<!--                                    [color]="'primary'">-->
+<!--                                Lưu-->
+<!--                            </button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
+
+</ng-container>

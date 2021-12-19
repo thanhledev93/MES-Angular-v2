@@ -27,13 +27,38 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {commonModule} from "../../../../shared/common-component/common.module";
 import { InventoryReceivingPopupAddComponent } from './inventory_receiving/popup-add/popup-add.component';
 import {FuseFindByKeyPipeModule} from "../../../../../@fuse/pipes/find-by-key";
+import {InventoryDeliveryListComponent} from "./inventory_delivery/list/list.component";
+import {InventoryDeliveryComponent} from "./inventory_delivery/inventory-delivery.component";
+import {InventoryDeliveryPopupAddComponent} from "./inventory_delivery/popup-add/popup-add.component";
+import {InventoryItemLineUpListComponent} from "./inventory_item_line_up/list/list.component";
+import {Inventory_item_line_upComponent} from "./inventory_item_line_up/inventory_item_line_up.component";
+import { InventoryItemLineUpPopupAddComponent } from './inventory_item_line_up/popup-add/popup-add.component';
+import {InventoryNeedSupplierScheduleListComponent} from "./inventory_need_supplier_schedule/list/list.component";
+import {
+    Inventory_need_supplier_scheduleComponent
+} from "./inventory_need_supplier_schedule/inventory_need_supplier_schedule.component";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import { CalendarModule } from 'app/shared/calendar/calendar.module';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import {NzSelectModule} from "ng-zorro-antd/select";
 
 // @ts-ignore
 @NgModule({
     declarations: [
         InventoryReceivingComponent,
         InventoryReceivingListComponent,
-        InventoryReceivingPopupAddComponent
+        InventoryReceivingPopupAddComponent,
+
+        Inventory_item_line_upComponent,
+        InventoryItemLineUpListComponent,
+        InventoryItemLineUpPopupAddComponent,
+
+        InventoryDeliveryComponent,
+        InventoryDeliveryListComponent,
+        InventoryDeliveryPopupAddComponent,
+
+        Inventory_need_supplier_scheduleComponent,
+        InventoryNeedSupplierScheduleListComponent
     ],
     imports: [
         RouterModule.forChild(inventoryRoutes),
@@ -58,7 +83,12 @@ import {FuseFindByKeyPipeModule} from "../../../../../@fuse/pipes/find-by-key";
         MatTabsModule,
         MatSidenavModule,
         commonModule,
-        FuseFindByKeyPipeModule
+        FuseFindByKeyPipeModule,
+        MatCheckboxModule,
+        CalendarModule,
+
+        NzInputModule,
+        NzSelectModule
     ],
     providers   : [
         {

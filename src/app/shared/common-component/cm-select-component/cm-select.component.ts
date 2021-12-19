@@ -33,7 +33,6 @@ export class CmSelectComponent implements ControlValueAccessor, OnDestroy
     @Input() label: any;
     @Input() labelAddString: string;
     @Input() type: any;
-    @Input() initValue: any;
     @Input() callbackChange: Function;
     @Output() readonly objectChose: EventEmitter<any> = new EventEmitter<any>();
 
@@ -54,6 +53,7 @@ export class CmSelectComponent implements ControlValueAccessor, OnDestroy
         private _changeDetectorRef: ChangeDetectorRef
     )
     {
+        if (this.type == '' || this.type == null) this.type = 'single';
     }
 
     writeValue(value: any): void {

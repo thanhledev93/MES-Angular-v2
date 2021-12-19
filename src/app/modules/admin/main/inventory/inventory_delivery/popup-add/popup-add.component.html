@@ -1,0 +1,383 @@
+<!--View mode-->
+<ng-container *ngIf="record.actionEnum === 3">
+    <div class="max-w-320 mb-3">
+        <mat-dialog-content class="mat-typography px-10 py-5">
+            <!-- Main -->
+            <div class="flex items-start justify-between">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 min-w-100">
+                    <div class="text-4xl tracking-tight text-secondary">{{ 'so_phieu' | transloco }}</div>
+                    <div class="text-4xl">{{record.db.name}}</div>
+                    <div class="font-medium tracking-tight text-secondary pt-5 uppercase">{{'create_date' | transloco}}</div>
+                    <div class="font-medium  pt-5">{{ record.db.export_date | date: 'dd/MM/yyyy HH:mm' }}</div>
+                    <div class="font-medium tracking-tight text-secondary uppercase">{{'create_by' | transloco}}</div>
+                    <div class="font-medium">{{ record.createby_name }}</div>
+                    <div class="font-medium tracking-tight text-secondary uppercase">{{ 'inventory.source' | transloco }}</div>
+                    <div class="font-medium">{{ list_type[record.db.type - 1].name }}</div>
+
+
+                    <ng-container *ngIf="record.db.type === 2">
+                        <div class="font-medium tracking-tight text-secondary uppercase">{{ list_type[record.db.type - 1].name }}</div>
+                        <div class="font-medium">{{ record.business_sale_order_name}}</div>
+                    </ng-container>
+                    <ng-container *ngIf="record.db.type === 1">
+                        <div class="font-medium tracking-tight text-secondary uppercase">{{ list_type[record.db.type - 1].name }}</div>
+                        <div class="font-medium">{{ record.production_order_name}}</div>
+                    </ng-container>
+
+                    <div class="font-medium tracking-tight text-secondary uppercase">{{'inventory.type' | transloco}}</div>
+                    <div class="font-medium">{{ record.sys_delivery_type_name }}</div>
+                    <div class="font-medium tracking-tight text-secondary uppercase">{{ 'NAV.sys_warehouse' | transloco }}</div>
+                    <div class="font-medium">{{ record.sys_warehouse_name }}</div>
+
+                    <ng-container *ngIf="record.db.note">
+                        <div class="font-medium tracking-tight text-secondary uppercase">{{'note' | transloco}}</div>
+                        <div class="font-medium">{{ record.db.note}}</div>
+                    </ng-container>
+
+
+                    <div class="font-medium tracking-tight text-secondary uppercase">{{'approval_status' | transloco}}</div>
+                    <div class="font-medium">
+                        <cm-approval-status [actionEnum]="record.actionEnum" [model]="data.approval"></cm-approval-status>
+                    </div>
+
+
+                </div>
+                <div class="grid auto-cols-max grid-flow-col gap-x-8 py-0 rounded-l-2xl">
+
+                    <div class="pl-10 border-l text-md">
+                        <div class="font-medium">TechSoft Inc.</div>
+                        <div>5th Floor, VTC Building</div>
+                        <div>No 132 Cong Hoa Street,</div>
+                        <div>Ward 4, Tan Binh Dist, Ho Chi Minh</div>
+                        <div>info@techpro.com.vn</div>
+                        <div>(084) 24 33 66 99 66</div>
+                        <div>https://techpro.vn</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-1 mt-12">
+                <ng-container *ngIf="record.list_item.length > 0; else noData">
+                    <!-- Columns -->
+                    <div class="col-span-3 font-medium text-md text-secondary uppercase">{{ 'NAV.sys_item' | transloco }}</div>
+                    <div class="col-span-3 font-medium text-md text-secondary uppercase">{{'NAV.sys_item_specification' | transloco}}</div>
+                    <div class="col-span-3 font-medium text-md text-secondary uppercase">{{ 'inventory.type_add' | transloco }}</div>
+                    <div class="col-span-3 font-medium text-md text-right text-secondary uppercase">{{ 'quantity' | transloco }}</div>
+
+                    <!-- Divider -->
+                    <ng-container *ngFor="let item of record.list_item">
+                        <div class="col-span-12 my-4 border-b"></div>
+
+                        <!-- Item -->
+                        <div class="col-span-3 text-md font-medium">{{ item.sys_item_name }}</div>
+                        <div class="col-span-3 text-md font-medium">{{ item.sys_item_specification_name }}</div>
+                        <div class="col-span-3">{{ type_add[item.db.type_add - 1].name  }}</div>
+                        <div class="col-span-3 self-center text-right">{{ item.db.quantity_unit_main }} {{ item.sys_unit_main_name }}</div>
+                    </ng-container>
+
+                </ng-container>
+
+                <ng-template #noData>
+                    <div class="col-span-12 border-t font-semibold tracking-tight text-center py-10">Không có dữ liệu</div>
+                </ng-template>
+
+            </div>
+
+            <div class="mt-16">
+                <div class="font-medium">Please pay within 15 days. Thank you for your business.</div>
+                <div class="flex items-start mt-4">
+                    <img
+                            class="flex-0 w-10 mt-2"
+                            src="assets/images/logo/logo.svg">
+                    <div class="ml-6 text-sm text-secondary">
+                        In condimentum malesuada efficitur. Mauris volutpat placerat auctor. Ut ac congue dolor. Quisque scelerisque lacus sed feugiat fermentum.
+                        Cras aliquet facilisis pellentesque. Nunc hendrerit quam at leo commodo, a suscipit tellus dapibus. Etiam at felis volutpat est mollis lacinia.
+                        Mauris placerat sem sit amet velit mollis, in porttitor ex finibus. Proin eu nibh id libero tincidunt lacinia et eget.
+                    </div>
+                </div>
+            </div>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+            <cm_sys_approval_button *ngIf="actionEnum === 3" [(id_sys_approval)]="record.db.id_approval"
+                                    [id_record]="record.db.id" [create_by]="record.db.create_by" [create_date]="record.db.create_date"
+                                    [(model)]="record.approval" [menu]="'inventory_delivery'">
+            </cm_sys_approval_button>
+
+            <button mat-stroked-button mat-dialog-close class="ml-3"> Đóng </button>
+        </mat-dialog-actions>
+    </div>
+</ng-container>
+
+
+<!--Edit mode-->
+<ng-container *ngIf="actionEnum === 2 || actionEnum === 1">
+    <div class="flex flex-col sm:min-w-100 md:min-w-200 max-w-240 max-h-screen -m-6 bg-gray-100 bg-card dark:bg-transparent">
+
+        <!-- Header -->
+        <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+            <div class="text-lg font-medium">{{ 'NAV.inventory_delivery' | transloco }}</div>
+            <button
+                    mat-icon-button
+                    (click)="close()"
+                    [tabIndex]="-1">
+                <mat-icon
+                        class="text-current"
+                        [svgIcon]="'heroicons_outline:x'"></mat-icon>
+            </button>
+        </div>
+
+        <!-- Budget details -->
+        <!-- Main -->
+        <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8 px-6 overflow-y-auto">
+            <div class="w-full mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0 mb-5">
+                    <div class="sm:col-span-6 bg-card shadow rounded-2xl p-6">
+                        <!-- Compose form -->
+                        <form [formGroup]="_form">
+
+                            <div class="grid sm:grid-cols-6 md:gap-x-6 w-full">
+                                <div class="sm:col-span-6 md:col-span-3">
+                                    <cm-input [label]="'so_phieu'" formControlName="name"
+                                              [errorModel]="errorModel" [keyError]="'db.name'"></cm-input>
+                                </div>
+
+                                <div class="sm:col-span-6 md:col-span-3">
+                                    <cm-input type="datepicker" [label]="'inventory.export_date'" formControlName="export_date"
+                                              [errorModel]="errorModel" [keyError]="'db.export_date'"></cm-input>
+                                </div>
+
+                                <div class="sm:col-span-6 md:col-span-3">
+                                    <cm-select label="NAV.sys_warehouse" formControlName="id_warehouse" [listData]="list_sys_warehouse"
+                                               [callbackChange]="getPosition.bind(this)" [errorModel]="errorModel" [keyError]="'db.id_warehouse'"></cm-select>
+                                </div>
+
+                                <div class="sm:col-span-6 md:col-span-3">
+                                    <cm-select label="NAV.sys_delivery_type" formControlName="id_delivery_type" [listData]="list_sys_delivery_type"
+                                               [errorModel]="errorModel" [keyError]="'db.id_delivery_type'"></cm-select>
+                                </div>
+
+                                <div class="sm:col-span-6 md:col-span-3">
+                                    <cm-input [isDisabled]="true" label="inventory.source" formControlName="type">a</cm-input>
+                                </div>
+
+                                <div class="sm:col-span-6 md:col-span-3">
+                                    <cm-input label="inventory.object" formControlName="object_"></cm-input>
+                                </div>
+
+                                <div class="sm:col-span-6 md:col-span-6">
+                                    <cm-input type="textarea" label="note" formControlName="note"></cm-input>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+<!--                Item Form-->
+                    <div class="sm:col-span-6 px-0 bg-card shadow rounded-2xl" *ngIf="record.db.type !== 1">
+                        <form [formGroup]="_formItem">
+                            <mat-tab-group (selectedIndexChange)="resetFormItem($event)" class="mt-8">
+                                <mat-tab *ngFor="let type of type_add; let index = index" [label]="type.name" class="p-6 sm:p-8 overflow-y-auto">
+                                    <div class="grid sm:grid-cols-6 gap-x-5 w-full">
+                                        <div class="sm:col-span-6" [ngClass]="{'md:col-span-6': type.id === 1,
+                                                                               'md:col-span-3': type.id !== 1}">
+                                            <cm-select-server-side (objectChose)="item_chose = $event" label="Mặt hàng" formControlName="item" link="sys_item.ctr/getListUse/"
+                                                                   [callbackChange]="bind_data_item_chose.bind(this)"></cm-select-server-side>
+                                        </div>
+
+                                        <div *ngIf="type.id === 2" class="sm:col-span-6 md:col-span-3">
+                                            <cm-select-server-side (objectChose)="item_chose_specification = $event" label="Quy cách" formControlName="specification" [filterData]="_formItem.get('item').value"
+                                                                   [callbackChange]="bind_data_specification_chose.bind(this)" link="sys_item_specification.ctr/getListUse/" ></cm-select-server-side>
+                                        </div>
+
+                                        <div *ngIf="type.id === 3" class="sm:col-span-6 md:col-span-3">
+                                            <cm-select (objectChose)="item_chose_other_unit = $event" label="Đơn vị tính khác" value="-1" formControlName="otherUnit"
+                                                       [listData]="listData_other_unit"></cm-select>
+                                        </div>
+
+                                        <div class="sm:col-span-6 md:col-span-2">
+                                            <cm-select (objectChose)="position_chose = $event;" label="Vị trí" formControlName="id_warehouse_position"
+                                                       [callbackChange]="bind_data_position_chose.bind(this)" [listData]="list_position"></cm-select>
+                                        </div>
+
+                                        <div class="sm:col-span-6 md:col-span-2">
+                                            <cm-input [isDisabled]="true" label="Tồn kho" formControlName="stock"></cm-input>
+                                        </div>
+
+                                        <div class="sm:col-span-6 md:col-span-2">
+                                            <cm-input type="number" label="Số lượng" formControlName="quantity"></cm-input>
+                                        </div>
+                                    </div>
+                                </mat-tab>
+                        </mat-tab-group>
+                        </form>
+
+                        <!-- Actions -->
+                        <div class="flex col-span-6 sm:items-center justify-end px-6 pb-6 sm:px-8 sm:pb-8 -mt-5 overflow-y-auto">
+
+                            <div class="flex items-center sm:mt-0">
+
+                                <!-- Send -->
+                                <button (click)="addDetail()"
+                                        mat-flat-button
+                                        [color]="'primary'">
+                                    Thêm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-6 p-6 bg-card shadow rounded-2xl">
+                        <div style="color: #f1416c; font-style: italic; font-size: small"
+                                 *ngFor="let item of errorModel | filter: 'key':'list_item'; index as i">
+                            (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
+                         </div>
+                        <!-- Table -->
+                        <ng-container *ngIf=" dataSource.data.length > 0; else noData">
+                            <div class="flex flex-col flex-auto mt-2 overflow-x-auto sm:overflow-y-auto" cdkScrollable>
+                                <table
+                                        class="w-full mainTable"
+                                        mat-table
+                                        [dataSource]="dataSource"
+                                        [trackBy]="trackByFn">
+
+                                    <!-- Function -->
+                                    <ng-container matColumnDef="function">
+                                        <th class="min-w-30 text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Chức năng
+                                        </th>
+                                        <td mat-cell *matCellDef="let data, index as i">
+                                           <button (click)="deleteDetail(i)" [color]="'warn'" mat-icon-button>
+                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                           </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Name -->
+                                    <ng-container matColumnDef="item">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{'NAV.sys_item' | transloco}}
+                                        </th>
+                                        <td  mat-cell *matCellDef="let data">
+                                            {{ data.sys_item_name }}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Status finish -->
+                                    <ng-container matColumnDef="specification">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'NAV.sys_item_specification' | transloco }}
+                                        </th>
+                                        <td mat-cell
+                                            *matCellDef="let data">
+                                            {{data.sys_item_specification_name  }}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Warehouse -->
+                                    <ng-container matColumnDef="warehouse_position">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'inventory.warehouse_position' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data">
+                                         {{ data.warehouse_position_name }}
+<!--                                            <nz-select ngModel="ASC-10">-->
+<!--                                                <nz-option nzValue="ASC-10" nzLabel="ASC-10"></nz-option>-->
+<!--                                                <nz-option nzValue="ASC-11" nzLabel="ASC-11"></nz-option>-->
+<!--                                                <nz-option nzValue="ASC-12" nzLabel="ASC-12"></nz-option>-->
+<!--                                            </nz-select>-->
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Warehouse -->
+                                    <ng-container matColumnDef="quantity">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'quantity' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data">
+                                            <ng-container *ngIf="data.db.type_add === 3; else unitMain">
+                                                <span class="flex items-end">{{ data.db.quantity_unit_main }} {{ data.sys_unit_main_name }}
+                                                    <mat-icon class="pt-2" svgIcon="heroicons_outline:arrow-sm-left"></mat-icon>
+                                                    {{data.db.quantity }} {{ data.sys_unit_name }}
+                                                </span>
+                                            </ng-container>
+                                            <ng-template #unitMain>
+                                                <span>{{ data.db.quantity_unit_main }} {{ data.sys_unit_main_name }} </span>
+<!--                                                <nz-input-group nzAddOnAfter="{{ data.sys_unit_main_name }}">-->
+<!--                                                    <input class="w-20" type="text" nz-input [(ngModel)]="data.db.quantity" />-->
+<!--                                                </nz-input-group>-->
+                                            </ng-template>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Type -->
+                                    <ng-container matColumnDef="type_add">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'inventory.type_add' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data">
+                                            <div *ngIf="data.db.type_add==1">
+                                                {{ type_add[0].name }}
+                                            </div>
+                                            <div *ngIf="data.db.type_add==2">
+                                                {{ type_add[1].name }}
+                                            </div>
+                                            <div *ngIf="data.db.type_add==3">
+                                                {{ type_add[2].name }}
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr
+                                            mat-header-row
+                                            *matHeaderRowDef="dataTableColumns; sticky: true"></tr>
+                                    <tr class="hover:bg-gray-50 h-13"
+                                        mat-row
+                                        *matRowDef="let row; columns: dataTableColumns;"></tr>
+                                </table>
+                            </div>
+                        </ng-container>
+                        <mat-paginator
+                                class="bg-transparent"
+                                [ngClass]="{'pointer-events-none': false}"
+                                [length]=10
+                                [pageIndex] = 0
+                                [pageSize] = 10
+                                [pageSizeOptions]="[10, 20, 50, 100]"
+                                [showFirstLastButtons]="true"
+                                (page)="onChangePage($event)"></mat-paginator>
+                        <ng-template #noData>
+                            <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">Không có dữ liệu</div>
+                        </ng-template>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                        <!-- Actions -->
+                        <div class="flex col-span-6 sm:items-center justify-end">
+                            <div class="flex items-center sm:mt-0 mb-6">
+                                <!-- Send -->
+                                <button
+                                        (click)="save()"
+                                        mat-flat-button
+                                        [color]="'primary'">
+                                    Lưu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-container>

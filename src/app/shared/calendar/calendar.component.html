@@ -1,0 +1,164 @@
+<div class="flex flex-col min-w-0 overflow-hidden dark:bg-gray-900 rounded-2xl ring-4 ring-gray-200">
+
+    <mat-drawer-container class="flex-auto h-full bg-transparent">
+
+        <!-- Drawer -->
+        <mat-drawer class="w-60 dark:bg-gray-900" [autoFocus]="false" [mode]="drawerMode" [opened]="drawerOpened"
+                    #drawer>
+            <calendar-sidebar (calendarUpdated)="onCalendarUpdated($event)"></calendar-sidebar>
+        </mat-drawer>
+
+        <mat-drawer-content class="flex" [class.md:ml-60]="stateDrawer">
+
+            <!-- Main -->
+            <div class="flex flex-col flex-auto">
+
+                <!-- Header -->
+                <div class="flex flex-0 flex-wrap items-center p-4 border-b bg-card w-full">
+
+                    <button mat-icon-button (click)="toggleDrawer()">
+                        <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
+                    </button>
+
+                    <div class="ml-4 text-2xl font-semibold tracking-tight whitespace-nowrap">
+                        {{viewTitle}}
+                    </div>
+
+                    <button class="ml-5" mat-icon-button (click)="previous()">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                    </button>
+
+                    <button mat-icon-button (click)="next()">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                    </button>
+
+                    <button class="hidden md:inline-flex" mat-icon-button (click)="today()">
+                        <mat-icon [svgIcon]="'heroicons_outline:calendar'"></mat-icon>
+                    </button>
+
+                    <div class="hidden md:block ml-auto">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-30 ml-2">
+                            <mat-select (selectionChange)="changeView(viewChanger.value)" [value]="view"
+                                        #viewChanger="matSelect">
+                                <mat-option [value]="'dayGridMonth'">{{'month'| transloco}}</mat-option>
+                                <mat-option [value]="'timeGridWeek'">{{'week'| transloco}}</mat-option>
+                                <mat-option [value]="'timeGridDay'">{{'day'| transloco}}</mat-option>
+                                <mat-option [value]="'listYear'">{{'list'| transloco}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Mobile menu -->
+                    <div class="md:hidden ml-auto">
+                        <button class="" [matMenuTriggerFor]="actionsMenu" mat-icon-button>
+                            <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+
+                            <mat-menu #actionsMenu="matMenu">
+                                <button mat-menu-item (click)="today()">
+                                    <mat-icon [svgIcon]="'heroicons_outline:calendar'"></mat-icon>
+                                    <span>Go to today</span>
+                                </button>
+                                <button [matMenuTriggerFor]="actionsViewsMenu" mat-menu-item>
+                                    <mat-icon [svgIcon]="'heroicons_outline:view-grid'"></mat-icon>
+                                    <span>View</span>
+                                </button>
+                            </mat-menu>
+
+                            <mat-menu #actionsViewsMenu="matMenu">
+                                <button mat-menu-item [disabled]="view === 'dayGridMonth'"
+                                        (click)="changeView('dayGridMonth')">
+                                    <span>Month</span>
+                                </button>
+                                <button mat-menu-item [disabled]="view === 'timeGridWeek'"
+                                        (click)="changeView('timeGridWeek')">
+                                    <span>Week</span>
+                                </button>
+                                <button mat-menu-item [disabled]="view === 'timeGridDay'"
+                                        (click)="changeView('timeGridDay')">
+                                    <span>Day</span>
+                                </button>
+                                <button mat-menu-item [disabled]="view === 'listYear'" (click)="changeView('listYear')">
+                                    <span>Schedule</span>
+                                </button>
+                            </mat-menu>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FullCalendar -->
+                <div class="flex flex-col flex-auto">
+                    <full-calendar [locales]="locales" [locale]="'vi'" (eventDrop)="handleDrop($event)"
+                                   [defaultView]="view" [events]="events" [droppable]="true" [editable]="true"
+                                   [firstDay]="settings.startWeekOn" [handleWindowResize]="false" [header]="false"
+                                   [height]="'parent'" [plugins]="calendarPlugins" [views]="views"
+                                   (eventClick)="onEventClick($event)" (eventRender)="onEventRender($event)" #fullCalendar>
+                    </full-calendar>
+                </div>
+
+                <!-- Event panel -->
+                <ng-template #eventPanel>
+
+                    <!-- Preview mode -->
+                    <ng-container *ngIf="panelMode === 'view'">
+                        <div class="flex-auto p-8">
+                            <!-- Info -->
+                            <div class="flex">
+                                <mat-icon [svgIcon]="'heroicons_outline:information-circle'"></mat-icon>
+                                <div class="flex flex-auto justify-between ml-6">
+                                    <!-- Info -->
+                                    <div>
+                                        <div class="text-3xl font-semibold tracking-tight leading-none">{{event.title ||
+                                        '(No title)'}}</div>
+                                        <div class="mt-0.5 text-secondary">{{event.start | date:'EEEE, MMMM d' }}</div>
+                                        <div class="text-secondary">{{recurrenceStatus }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Item -->
+                            <div class="flex mt-6" *ngIf="event.sys_item_name">
+                                <mat-icon [svgIcon]="'heroicons_outline:cube'"></mat-icon>
+                                <div class="flex-auto ml-6">{{event.sys_item_name}}</div>
+                            </div>
+
+                            <!-- Spec -->
+                            <div class="flex mt-6" *ngIf="event.sys_item_specification_name">
+                                <mat-icon [svgIcon]="'heroicons_outline:color-swatch'"></mat-icon>
+                                <div class="flex-auto ml-6">{{event.sys_item_specification_name}}</div>
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="flex mt-6" *ngIf="event.db.quantity_unit_main">
+                                <mat-icon [svgIcon]="'heroicons_outline:clipboard-check'"></mat-icon>
+                                <div class="flex-auto ml-6">{{event.db.quantity_unit_main}} {{ event.sys_unit_main_name }}</div>
+                            </div>
+
+                            <!-- Customer -->
+                            <div class="flex mt-6" *ngIf="event.sys_customer_name">
+                                <mat-icon [svgIcon]="'heroicons_outline:users'"></mat-icon>
+                                <div class="flex-auto ml-6">{{event.sys_customer_name}}</div>
+                            </div>
+
+                            <!-- Calendar -->
+                            <div class="flex mt-6">
+                                <mat-icon [svgIcon]="'heroicons_outline:calendar'"></mat-icon>
+                                <div class="flex flex-auto items-center ml-6">
+                                    <div class="w-2 h-2 rounded-full" [ngClass]="getCalendar(event.calendarId).color">
+                                    </div>
+                                    <div class="ml-3 leading-none">{{getCalendar(event.calendarId).title}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+
+                </ng-template>
+
+            </div>
+
+        </mat-drawer-content>
+
+    </mat-drawer-container>
+
+</div>

@@ -1,0 +1,303 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row items-start sm:items-center sm:justify-between px-6 py-4 md:px-8 border-b bg-card dark:bg-transparent">
+
+        <!-- Loader-->
+        <div class="absolute inset-x-0 bottom-0"
+             *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+
+        <!-- Title -->
+        <div>
+            <div class="text-2xl font-extrabold tracking-tight leading-none">{{ 'NAV.inventory_need_supplier_schedule' | transloco }}</div>
+        </div>
+        <!-- Actions -->
+        <div class="mt-5 w-full sm:mt-0 sm:w-auto">
+            <button
+                    mat-flat-button
+                    [color]="'primary'"
+                    (click)="openDialogComponent()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">{{ 'inventory.add_inventory_delivery' | transloco }}</span>
+            </button>
+        </div>
+    </div>
+    <div class="flex-auto h-full bg-gray-100 bg-card dark:bg-transparent px-6 overflow-y-scroll">
+        <!-- Main -->
+        <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8">
+            <div class="w-full mx-auto">
+
+
+                <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">
+
+                    <!-- Search -->
+                    <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl overflow-hidden">
+                        <div class="flex flex-col flex-auto mt-2 overflow-x-auto p-6">
+                            <form [formGroup]="_form">
+                                <div class="grid sm:grid-cols-6 gap-x-5 w-full">
+                                    <div class="sm:col-span-6 md:col-span-2">
+                                        <cm-input type="text"
+                                                  formControlName="search"
+                                                  class="w-full"
+                                                  label="search"
+                                                  icon="heroicons_solid:search"
+                                                  placeholder="Nhập vào số phiếu"
+                                                  [callbackChange]="filterByQuery.bind(this)">
+                                        </cm-input>
+                                    </div>
+
+                                    <div class="sm:col-span-6 md:col-span-2">
+                                        <cm-select label="inventory.customer_name"
+                                                   [listData]="list_customer"
+                                                   formControlName="id_customer"
+                                                   [callbackChange]="filterByCustomer.bind(this)">
+                                        </cm-select>
+                                    </div>
+
+                                    <div class="sm:col-span-6 md:col-span-2">
+                                        <cm-select label="inventory.status_export"
+                                                   [listData]="list_export_status"
+                                                   formControlName="status_export"
+                                                   [callbackChange]="filterByStatusExport.bind(this)">
+                                        </cm-select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Main table -->
+
+                    <div class="sm:col-span-6">
+                        <mat-slide-toggle
+                                class="mt-8 sm:mt-0"
+                                [color]="'primary'"
+                                (change)="toggleCalendarMode()">
+                            Xem dạng lịch
+                        </mat-slide-toggle>
+                    </div>
+                    <div class="sm:col-span-6 flex flex-col flex-auto px-0 shadow rounded-2xl overflow-hidden" [ngClass]="{'bg-card' : !calendarMode}">
+
+<!--                        Table-->
+                        <div *ngIf="!calendarMode">
+                            <ng-container *ngIf="listData.length > 0; else noData">
+                                <div class="flex flex-col flex-auto mt-2 overflow-x-auto sm:overflow-y-auto" cdkScrollable>
+                                    <table
+                                            class="min-w-240 w-full mainTable"
+                                            mat-table
+                                            [dataSource]="listData"
+                                            [trackBy]="trackByFn">
+
+                                        <ng-container matColumnDef="function" sticky>
+                                            <th class="min-w-30 text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                Chức năng
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data, index as i">
+                                                <span class="flex items-center">
+                                                    <mat-checkbox *ngIf="data.db.status_export === 1"
+                                                            class="flex items-center h-10 min-h-10 px-4"
+                                                            [color]="'primary'"
+                                                            [checked]="data.isChecked"
+                                                            (change)="toggleItemChoose(data, $event)">
+                                                    </mat-checkbox>
+
+                                                      <button *ngIf="data.db.status_export === 2" mat-menu-item>
+<!--                                                          (click)="openDialogComponent(data, i, 3)">-->
+                                                                <mat-icon [svgIcon]="'heroicons_outline:eye'"
+                                                                          class="icon-size-5"></mat-icon>
+                                                            </button>
+                                                </span>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="need_supplier_date">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'inventory.need_supplier_date' | transloco }}
+                                            </th>
+                                            <td mat-cell *matCellDef="let data">
+                                                {{ data.db.need_supplier_date | date: 'dd/MM/yyyy' }}
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="production_order">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'NAV.production_order' | transloco }}
+                                            </th>
+                                            <td mat-cell *matCellDef="let data">
+                                            <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                                    {{ data.production_order_name }}
+                                            </span>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="customer_name">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'inventory.customer_name' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                                {{ data.sys_customer_name }}
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="sys_item">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'NAV.sys_item' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                                {{data.sys_item_name}}
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="sys_item_specification">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'NAV.sys_item_specification' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                                {{data.sys_item_specification_name}}
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="quantity">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'quantity' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                                {{ data.db.quantity_unit_main | number }} {{ data.sys_unit_main_name }}
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="quantity_supplied">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'inventory.quantity_supplied' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                        <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                            {{data.db.quantity_export | number }} {{data.sys_unit_main_name}}
+                                        </span>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="type_add">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'inventory.type_add' | transloco }}
+                                            </th>
+                                            <td mat-cell *matCellDef="let data">
+                                                <div *ngIf="data.db.type_add==1">
+                                                    {{ type_add[0].name }}
+                                                </div>
+                                                <div *ngIf="data.db.type_add==2">
+                                                    {{ type_add[1].name }}
+                                                </div>
+                                                <div *ngIf="data.db.type_add==3">
+                                                    {{ type_add[2].name }}
+                                                </div>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="inventory_delivery">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'NAV.inventory_delivery' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                            <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                                <table>
+                                                    <tr *ngFor="let px of data.list_inventory_delivery;  index as i;">
+                                                        <td>
+                                                            <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                                                {{px.name}}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </span>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="note">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'note' | transloco }}
+                                            </th>
+                                            <td
+                                                    mat-cell
+                                                    *matCellDef="let data">
+                                            <span class="whitespace-nowrap">
+                                                {{ data.db.note }}
+                                            </span>
+
+                                            </td>
+                                        </ng-container>
+
+                                        <tr
+                                                mat-header-row
+                                                *matHeaderRowDef="dataTableColumns; sticky: true"></tr>
+                                        <tr class="hover:bg-gray-50 h-13"
+                                            mat-row
+                                            *matRowDef="let row; columns: dataTableColumns;"></tr>
+                                    </table>
+                                </div>
+                            </ng-container>
+
+                            <ng-template #noData>
+                                <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">Không có dữ liệu</div>
+                            </ng-template>
+                        </div>
+
+<!--                        Calendar-->
+                        <div *ngIf="calendarMode">
+                            <calendar (emitCalendarApi)="setApiCalendar($event)" [filter]="_filter" [controller]="'inventory_need_supplier_schedule'"></calendar>
+                        </div>
+
+<!--                        Pagination-->
+                        <mat-paginator
+                                [hidden]="calendarMode"
+                                class="bg-transparent"
+                                [ngClass]="{'pointer-events-none': isLoading}"
+                                [length]="pagination.recordsTotal"
+                                [pageIndex] = 0
+                                [pageSize] = 10
+                                [pageSizeOptions]="[10, 20, 50, 100]"
+                                [showFirstLastButtons]="true"></mat-paginator>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
