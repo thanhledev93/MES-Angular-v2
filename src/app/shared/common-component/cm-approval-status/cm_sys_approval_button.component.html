@@ -1,0 +1,16 @@
+<ng-container *transloco="let t">
+    <div class="flex flex-row justify-end space-x-2">
+        <button *ngIf="model.to_user==currentUser.id && model.status_finish==2" mat-raised-button
+                mat-flat-button color="primary" (click)="approval()">{{t('common.approval')}}</button>
+    <button *ngIf="model.status_finish==3 && currentUser.name=='administrator'"
+        mat-flat-button color="warn"  (click)="cancel()">{{t('common.cancel')}}</button>
+    <button *ngIf="model.status_finish==3" mat-raised-button class="dark:bg-red-900 ring-white ring-2 dark:hover:bg-red-700 dark:ring-red-600 bg-red-600 text-white shadow-none hover:bg-red-700"
+        (click)="close()">{{t('common.close')}}</button>
+    <button *ngIf="model.status_finish==6 || (model.status_finish==4 && currentUser.currentUser=='administrator')" mat-flat-button color="primary" (click)="open()">{{t('common.open')}}</button>
+    <button mat-flat-button color="accent"  style="margin-right:10px"
+        *ngIf="model.to_user==currentUser.id && model.status_finish==2"
+        (click)="return()">{{t('return')}}</button>
+    <button *ngIf="model.id==0||model.status_finish==5" mat-flat-button color="primary" (click)="openDialogApproval()">{{t('send_approval')}}</button>
+    </div>
+
+</ng-container>

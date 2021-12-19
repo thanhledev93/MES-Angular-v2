@@ -1,0 +1,316 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row items-start sm:items-center sm:justify-between px-6 py-4 md:px-8 border-b bg-card dark:bg-transparent">
+
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0"
+                *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+
+        <!-- Title -->
+        <div>
+            <div class="text-2xl font-extrabold tracking-tight leading-none">{{ 'NAV.inventory_receiving' | transloco }}</div>
+        </div>
+        <!-- Actions -->
+        <div class="mt-5 w-full sm:mt-0 sm:w-auto">
+            <button
+                    mat-flat-button
+                    [color]="'primary'"
+                    (click)="openDialogComponent()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">{{ 'add' | transloco }}</span>
+            </button>
+        </div>
+    </div>
+    <div class="flex-auto h-full bg-gray-100 bg-card dark:bg-transparent px-6 overflow-y-scroll">
+        <!-- Main -->
+        <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8">
+            <div class="w-full mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">
+                    <!-- Budget details -->
+                    <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl overflow-hidden">
+                        <div class="flex flex-col flex-auto mt-2 overflow-x-auto p-6">
+                            <form [formGroup]="_form">
+                                <div class="grid sm:grid-cols-6 gap-x-5 w-full">
+                                    <div class="sm:col-span-6 md:col-span-4">
+                                        <cm-input type="text"
+                                                  formControlName="search"
+                                                  class="w-full"
+                                                  label="Tìm kiếm"
+                                                  icon="heroicons_solid:search"
+                                                  placeholder="Nhập vào số phiếu"
+                                                  [callbackChange]="filterByQuery.bind(this)">
+                                        </cm-input>
+                                    </div>
+                                    <div class="sm:col-span-6 md:col-span-2">
+                                        <cm-select class="w-100"
+                                                   label="Trạng thái duyệt"
+                                                   [initValue]="'-1'"
+                                                   [listData]="list_approval_status"
+                                                   formControlName="approval_status"
+                                                   [callbackChange]="filterByApprovalStatus.bind(this)">
+                                        </cm-select>
+                                    </div>
+                                </div>
+
+                                <mat-accordion hideToggle>
+                                <mat-expansion-panel [expanded]="expand" style="box-shadow: none !important"
+                                                     (opened)="panelOpenState = true"
+                                                     (closed)="panelOpenState = false">
+                                    <mat-expansion-panel-header class="pl-0">
+                                        <button
+                                                (click)="toggleAdvanceSearch()">
+                                            <span style="color: #009ef7; font-weight: 500">{{panelOpenState ? 'Ẩn tìm kiếm nâng cao' : 'Tìm kiếm nâng cao'}}</span>
+                                        </button>
+                                    </mat-expansion-panel-header>
+                                    <div style="border-bottom: 1px solid #eff2f5; border-bottom-style: dashed; border-bottom-color: #e4e6ef"></div>
+                                        <div class="grid sm:grid-cols-6 gap-x-5 w-full mt-5">
+                                            <div class="sm:col-span-6 md:col-span-2">
+                                                <cm-select label="Nguồn"
+                                                           [initValue]="'-1'"
+                                                           [listData]="list_type"
+                                                           formControlName="type"
+                                                           [callbackChange]="filterByType.bind(this)">
+                                                </cm-select>
+                                            </div>
+
+                                            <div class="sm:col-span-6 md:col-span-2">
+                                                <cm-select label="Kho"
+                                                           [initValue]="'-1'"
+                                                           [listData]="list_sys_warehouse"
+                                                           formControlName="sys_warehouse"
+                                                           [callbackChange]="filterByWarehouse.bind(this)">
+                                                </cm-select>
+                                            </div>
+
+                                            <div class="sm:col-span-6 md:col-span-2">
+                                                <cm-select label="Loại phiếu nhập"
+                                                           [initValue]="'-1'"
+                                                           [listData]="list_sys_receiving_type"
+                                                           formControlName="receiving_type"
+                                                           [callbackChange]="filterByReceivingType.bind(this)">
+                                                </cm-select>
+                                            </div>
+                                        </div>
+
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Budget details -->
+                    <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl overflow-hidden">
+                        <ng-container *ngIf="listData.length > 0; else noData">
+                            <div class="flex flex-col flex-auto mt-2 overflow-x-auto sm:overflow-y-auto" cdkScrollable>
+                                <table
+                                        class="min-w-240 w-full mainTable"
+                                        mat-table
+                                        [dataSource]="listData"
+                                        [trackBy]="trackByFn">
+
+                                    <!-- Function -->
+                                    <ng-container matColumnDef="function">
+                                        <th class="min-w-30 text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Chức năng
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data, index as i">
+                                                <span class="flex items-center">
+                                                    <button
+                                                            class="ml-4"
+                                                            mat-icon-button
+                                                            [matMenuTriggerFor]="headerMenu">
+                                                        <mat-icon
+                                                                [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                                                        <mat-menu #headerMenu>
+                                                            <button mat-menu-item (click)="openDialogComponent(data, i, 3)">
+                                                                <mat-icon [svgIcon]="'heroicons_outline:eye'"
+                                                                          class="icon-size-5"></mat-icon>
+                                                                {{'view' | transloco}}
+                                                            </button>
+
+                                                            <button *ngIf="data.db.type == 2 && (data.approval.status_finish == 5 || data.approval.status_finish == 1)"
+                                                                    mat-menu-item (click)="openDialogComponent(data, i, 2)">
+                                                                <mat-icon [svgIcon]="'heroicons_outline:pencil-alt'"
+                                                                          class="icon-size-5"></mat-icon>
+                                                                {{'system.edit' | transloco}}
+                                                            </button>
+                                                            <button  *ngIf="data.approval.status_finish == 5 || data.approval.status_finish == 1"
+                                                                mat-menu-item (click)="deleteRecord(data.db.id)" >
+                                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"
+                                                                          class="icon-size-5">
+                                                                </mat-icon>
+                                                                {{'system.delete' | transloco}}
+                                                            </button>
+                                                        </mat-menu>
+                                                    </button>
+                                                </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Name -->
+                                    <ng-container matColumnDef="name" sticky>
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Số phiếu
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                                <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                                    {{data.db.name}}
+                                                </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Status finish -->
+                                    <ng-container matColumnDef="status_finish">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Trạng thái duyệt
+                                        </th>
+                                        <td mat-cell
+                                            *matCellDef="let data">
+                                            <cm-approval-status [model]="data.approval"></cm-approval-status>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Warehouse -->
+                                    <ng-container matColumnDef="sys_warehouse_name">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Kho
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                            {{data.sys_warehouse_name}}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Type -->
+                                    <ng-container matColumnDef="type">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Nguồn
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                            {{list_type[data.db.type].name}}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- sys_receiving_type_name -->
+                                    <ng-container matColumnDef="sys_receiving_type_name">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Loại phiếu nhập
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                            {{data.sys_receiving_type_name}}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- create_date -->
+                                    <ng-container matColumnDef="create_date">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Ngày lập
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                            {{data.db.create_date | date: 'dd/MM/yyyy HH:mm'}}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- business_purchase_order_name -->
+                                    <ng-container matColumnDef="business_purchase_order_name">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Đơn hàng mua
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                        <span class="font-medium text-md text-secondary whitespace-nowrap">
+                                            {{data.business_purchase_order_name }}
+                                        </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- production_order_name -->
+                                    <ng-container matColumnDef="production_order_name">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            Lệnh sản xuất
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                        <span class="pr-6 font-medium text-md text-secondary whitespace-nowrap">
+                                             {{data.production_order_name }}
+                                        </span>
+
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Note -->
+                                    <ng-container matColumnDef="note">
+                                        <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                            Ghi chú
+                                        </th>
+                                        <td
+                                                mat-cell
+                                                *matCellDef="let data">
+                                            <span class="whitespace-nowrap">
+                                                {{data.db.note }}
+                                            </span>
+
+                                        </td>
+                                    </ng-container>
+
+                                    <tr
+                                            mat-header-row
+                                            *matHeaderRowDef="dataTableColumns; sticky: true"></tr>
+                                    <tr class="hover:bg-gray-50 h-13"
+                                        mat-row
+                                        *matRowDef="let row; columns: dataTableColumns;"></tr>
+                                </table>
+                            </div>
+                        </ng-container>
+                        <mat-paginator
+                                class="bg-transparent"
+                                [ngClass]="{'pointer-events-none': isLoading}"
+                                [length]="pagination.recordsTotal"
+                                [pageIndex] = 0
+                                [pageSize] = 10
+                                [pageSizeOptions]="[10, 20, 50, 100]"
+                                [showFirstLastButtons]="true"></mat-paginator>
+                        <ng-template #noData>
+                            <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">Không có dữ liệu</div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

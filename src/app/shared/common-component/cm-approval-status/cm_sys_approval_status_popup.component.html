@@ -1,0 +1,190 @@
+<div class="flex flex-col sm:min-w-100 md:min-w-200 max-w-240 max-h-screen -m-6 bg-gray-100 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+        <div class="text-lg font-medium">{{ 'NAV.sys_approval' | transloco }}</div>
+        <button
+                mat-icon-button
+                (click)="close()"
+                [tabIndex]="-1">
+            <mat-icon
+                    class="text-current"
+                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Budget details -->
+    <!-- Main -->
+    <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 mb-8 overflow-y-auto">
+        <div class="w-full mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-6 gap-x-6 w-full min-w-0 ">
+                <div class="sm:col-span-6">
+                    <mat-tab-group>
+                        <mat-tab label="{{'common.step_process_approval'| transloco }}" class="p-6 sm:p-8 overflow-y-auto">
+                            <div class="sm:col-span-6 p-6 bg-card shadow rounded-2xl pt-2">
+                                <div class="flex flex-col flex-auto mt-2 mb-5 overflow-x-auto sm:overflow-y-auto" cdkScrollable>
+                                    <!-- Table -->
+                                    <ng-container *ngIf=" dataSource.data.length > 0; else noData">
+                                        <table
+                                            class="w-full mainTable"
+                                            mat-table
+                                            [dataSource]="dataSource"
+                                            [trackBy]="trackByFn">
+
+                                        <!-- Name -->
+                                        <ng-container matColumnDef="step_num"   >
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{'common.step_num' | transloco}}
+                                            </th>
+                                            <td mat-cell
+                                                *matCellDef="let data">
+                                                {{data.db.step_num}}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Status finish -->
+                                        <ng-container matColumnDef="step_name">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'common.step_name' | transloco }}
+                                            </th>
+                                            <td mat-cell
+                                                *matCellDef="let data">
+                                                {{ data.db.name  }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Warehouse -->
+                                        <ng-container matColumnDef="user_name">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'common.user_name' | transloco }}
+                                            </th>
+                                            <td mat-cell *matCellDef="let data">
+                                               {{ data.user_name }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Type -->
+                                        <ng-container matColumnDef="duration_hours">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'common.duration_hours' | transloco }}
+                                            </th>
+                                            <td mat-cell *matCellDef="let data">
+                                             {{ data.db.duration_hours | number }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Type -->
+                                        <ng-container matColumnDef="note">
+                                            <th class="text-md font-semibold text-secondary"
+                                                mat-header-cell
+                                                *matHeaderCellDef>
+                                                {{ 'note' | transloco }}
+                                            </th>
+                                            <td mat-cell *matCellDef="let data">
+                                              {{ data.db.note }}
+                                            </td>
+                                        </ng-container>
+
+                                        <tr
+                                                mat-header-row
+                                                *matHeaderRowDef="dataTableColumns; sticky: true"></tr>
+                                        <tr class="hover:bg-gray-50 h-13"
+                                            mat-row
+                                            *matRowDef="let row; columns: dataTableColumns;"></tr>
+                                    </table>
+                                    </ng-container>
+                                </div>
+                                <ng-template #noData>
+                                    <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">Không có dữ liệu</div>
+                                </ng-template>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="{{'common.history_process_approval' |transloco}}" class="p-6 sm:p-8 overflow-y-auto">
+                            <div class="sm:col-span-6 p-6 bg-card shadow rounded-2xl pt-2 mb-5">
+                                <div>
+                                    <ol>
+                                        <!-- Activities -->
+                                        <ng-container *ngFor="let item of record.list_item; let i = index; let first = first; let last = last; trackBy: trackByFn">
+
+
+                                            <!-- Activity -->
+                                            <li class="relative flex py-7">
+                                                <!-- Line -->
+                                                <ng-container *ngIf="!last">
+                                                    <div class="absolute top-7 left-5 w-0.5 h-full -ml-px bg-gray-300 dark:bg-gray-600"></div>
+                                                </ng-container>
+
+                                                <div class="relative flex flex-auto">
+                                                    <!-- Icon -->
+
+                                                    <div class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-gray-400">
+                                                        <mat-icon
+                                                                class="icon-size-5 text-white"
+                                                                [svgIcon]="icon[item.db.status_action - 1]">
+                                                        </mat-icon>
+                                                    </div>
+                                                    <!-- Content -->
+                                                    <div class="flex flex-col flex-auto items-start">
+                                                        <!-- Description -->
+                                                        <ng-container *ngIf="item.db.status_action === 1">
+                                                            <div><strong>{{ item.from_user_name }}</strong> bắt đầu quy trình duyệt đến <strong>{{ item.to_user_name }}</strong></div>
+                                                        </ng-container>
+
+                                                        <ng-container *ngIf="item.db.status_action === 2">
+                                                            <div><strong>{{ item.from_user_name }}</strong> duyệt chứng từ</div>
+                                                        </ng-container>
+
+                                                        <ng-container *ngIf="item.db.status_action === 3">
+                                                            <div><strong>{{ item.from_user_name }}</strong> trả về <strong>{{ item.to_user_name }}</strong></div>
+                                                        </ng-container>
+
+                                                        <ng-container *ngIf="item.db.status_action === 5">
+                                                            <div><strong>{{ item.from_user_name }}</strong> mở chứng từ</div>
+                                                        </ng-container>
+
+                                                        <ng-container *ngIf="item.db.status_action === 6">
+                                                            <div><strong>{{ item.from_user_name }}</strong> đóng chứng từ</div>
+                                                        </ng-container>
+
+                                                        <div class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5">
+                                                            <!-- Date -->
+                                                            <div class="text-secondary">
+                                                                {{item.db.date_action | date: 'dd/MM/yyyy HH:mm'}}
+                                                            </div>
+                                                            <div class="hidden sm:block">&bull;</div>
+                                                            <div
+                                                                    class="cursor-pointer text-primary"
+                                                                    target="_blank">
+                                                                {{ item.db.step_num }}. {{item.db.step_name}}
+                                                            </div>
+                                                            <!-- Linked content -->
+                                                        </div>
+                                                        <!-- Extra content -->
+
+                                                        <ng-container *ngIf="item.db.status_action === 3 || item.db.status_action === 6 || item.db.status_action === 5">
+                                                            <div class="mt-4 py-4 px-5 rounded-lg bg-gray-200 dark:bg-gray-800"><strong>Lý do:</strong> {{ item.db.note }}</div>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ng-container>
+                                    </ol>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

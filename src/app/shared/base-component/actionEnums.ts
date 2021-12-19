@@ -1,0 +1,1 @@
+export enum actionEnums { Detail = 3, Edit = 2, Add = 1, CalendarDetail = 6 };

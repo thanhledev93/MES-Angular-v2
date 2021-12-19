@@ -1,0 +1,15 @@
+
+<mat-form-field class="w-full">
+    <mat-label> {{ label | transloco }} {{ labelAddString | transloco}}<span style="color: #f1416c; font-style: italic; font-size: small" *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
+         (<span *ngFor="let msg of item.value"> {{ msg | transloco}} </span>)
+    </span>
+    </mat-label>
+    <mat-select  (selectionChange)="onChange($event)">
+        <mat-option>
+            <ngx-mat-select-search [formControl]="inputFormControl" [searching]="searching" placeholderLabel="Tìm kiếm" noEntriesFoundLabel="{{'Không tìm thấy'}}"></ngx-mat-select-search>
+        </mat-option>
+        <mat-option *ngFor="let record of filteredData | async" [value]="record.id">
+            {{record.name}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>

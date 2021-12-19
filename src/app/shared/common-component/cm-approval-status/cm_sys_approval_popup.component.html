@@ -1,0 +1,132 @@
+<div class="flex flex-col sm:min-w-100 md:min-w-200 max-w-240 max-h-screen -m-6 bg-gray-100 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+        <div class="text-lg font-medium">{{ 'NAV.sys_approval' | transloco }}</div>
+        <button
+                mat-icon-button
+                (click)="close()"
+                [tabIndex]="-1">
+            <mat-icon
+                    class="text-current"
+                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Budget details -->
+    <!-- Main -->
+    <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 mb-8 overflow-y-auto">
+        <div class="w-full mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-6 gap-x-6 w-full min-w-0 px-6">
+                <div class="col-span-6">
+                    <form [formGroup]="_form">
+                        <cm-select label="NAV.sys_approval" formControlName="sys_approval" [listData]="listData_sys_approval"
+                                   [errorModel]="errorModel" [keyError]="'db.id_sys_approval_config'"  (objectChose)="dataSource.data = $event.list_item; item_sys_approval_config = $event" [callbackChange]="bind_sys_approval_config.bind(this)"></cm-select>
+                    </form>
+                </div>
+                <div class="col-span-6">
+                    <div class="sm:col-span-6 p-6 bg-card shadow rounded-2xl mb-2 py-2">
+                        <div class="flex flex-col flex-auto mt-2 mb-5 overflow-x-auto sm:overflow-y-auto" cdkScrollable>
+                            <!-- Table -->
+                            <ng-container *ngIf=" dataSource.data.length > 0; else noData">
+                                <table
+                                        class="w-full mainTable"
+                                        mat-table
+                                        [dataSource]="dataSource"
+                                        [trackBy]="trackByFn">
+
+                                    <!-- Name -->
+                                    <ng-container matColumnDef="step_num">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{'common.step_num' | transloco}}
+                                        </th>
+                                        <td mat-cell
+                                            *matCellDef="let data">
+                                            {{data.db.step_num}}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Status finish -->
+                                    <ng-container matColumnDef="step_name">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'common.step_name' | transloco }}
+                                        </th>
+                                        <td mat-cell
+                                            *matCellDef="let data">
+                                            {{ data.db.name  }}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Warehouse -->
+                                    <ng-container matColumnDef="user_name">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'common.user_name' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data">
+                                            {{ data.user_name }}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Type -->
+                                    <ng-container matColumnDef="duration_hours">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'common.duration_hours' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data">
+                                            {{ data.db.duration_hours | number }}
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Type -->
+                                    <ng-container matColumnDef="note">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'note' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data">
+                                            {{ data.db.note }}
+                                        </td>
+                                    </ng-container>
+
+                                    <tr
+                                            mat-header-row
+                                            *matHeaderRowDef="dataTableColumns; sticky: true"></tr>
+                                    <tr class="hover:bg-gray-50 h-13"
+                                        mat-row
+                                        *matRowDef="let row; columns: dataTableColumns;"></tr>
+                                </table>
+                            </ng-container>
+                        </div>
+                        <ng-template #noData>
+                            <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">Không có dữ liệu</div>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="col-span-6">
+                    <!-- Actions -->
+                    <div class="flex col-span-6 sm:items-center justify-end">
+                        <div class="flex items-center mt-5">
+                            <!-- Send -->
+                            <button
+                                    (click)="save()"
+                                    mat-flat-button
+                                    [color]="'primary'">
+                                {{ 'send_approval' | transloco }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,91 @@
+<mat-form-field *ngIf="type === 'text'" class="w-full">
+    <mat-label> {{ label | transloco }} {{ labelAddString | transloco }}
+        <span style="color: #f1416c; font-style: italic; font-size: small"
+              *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
+            (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
+        </span>
+    </mat-label>
+<!--    <mat-icon class="icon-size-5"-->
+<!--              matPrefix > {{icon}} </mat-icon>-->
+    <mat-icon *ngIf="icon"
+            class="icon-size-5"
+            matPrefix
+            [svgIcon]="icon"></mat-icon>
+    <input
+        [type]="type"
+        [value]="value"
+        [disabled]="isDisabled"
+        matInput
+        [placeholder]="placeholder"
+        (blur)="touched()"
+        (input)="onChange($event.target.value);">
+
+</mat-form-field>
+
+<mat-form-field *ngIf="type === 'datepicker'" class="w-full">
+    <mat-label> {{ label | transloco }} {{ labelAddString | transloco }}
+        <span style="color: #f1416c; font-style: italic; font-size: small"
+              *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
+            (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
+        </span>
+    </mat-label>
+    <input
+            matInput
+            [matDatepicker]="created_date_Datepicker" [value]="value">
+    <mat-datepicker-toggle
+            matSuffix
+            [for]="created_date_Datepicker">
+    </mat-datepicker-toggle>
+    <mat-datepicker #created_date_Datepicker></mat-datepicker>
+</mat-form-field>
+
+<mat-form-field *ngIf="type === 'number'" class="text-right w-full">
+    <mat-label> {{ label | transloco }} {{ labelAddString | transloco }}
+        <span style="color: #f1416c; font-style: italic; font-size: small"
+              *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
+            (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
+        </span>
+    </mat-label>
+<!--    <mat-icon class="icon-size-5" matPrefix > {{icon}} </mat-icon>-->
+    <mat-icon *ngIf="icon"
+            class="icon-size-5"
+            matPrefix
+            [svgIcon]="icon"></mat-icon>
+    <input min="0" [value]="value" [readonly]="actionEnum === 3" maxlength="30" [options]="myOptions" autonumeric matInput (blur)="touched()" (input)="onChange($event.target.value)" type="number"
+           oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
+    <span matSuffix> &nbsp;{{ suffixstring }}</span>
+</mat-form-field>
+
+<mat-form-field *ngIf="type === 'readonly'" class="w-full">
+    <mat-label> {{ label | transloco}} {{ labelAddString | transloco}} </mat-label>
+<!--    <mat-icon class="icon-size-5" matPrefix > {{icon}} </mat-icon>-->
+    <mat-icon *ngIf="icon"
+              class="icon-size-5"
+              matPrefix
+              [svgIcon]="icon"></mat-icon>
+    <input readonly matInput [value]="value">
+</mat-form-field>
+
+<mat-form-field *ngIf="type === 'textarea'" class="fuse-mat-textarea w-full">
+    <mat-label> {{ label | transloco }} {{ labelAddString | transloco }}
+        <span style="color: #f1416c; font-style: italic; font-size: small"
+              *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
+            (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
+        </span>
+    </mat-label>
+    <mat-icon
+            matPrefix
+            class="hidden sm:flex icon-size-5"
+            [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+    <textarea
+            [value]="value"
+            matInput
+            [rows]="1"
+            [spellcheck]="false"
+            matTextareaAutosize
+            [placeholder]="placeholder"
+            (blur)="touched()"
+            (input)="onChange($event.target.value);"
+    ></textarea>
+</mat-form-field>
+

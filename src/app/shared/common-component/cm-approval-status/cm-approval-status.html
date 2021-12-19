@@ -1,0 +1,84 @@
+<div>
+    <div *ngIf="model.id==0">
+        <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase w-max
+        py-0.5 px-3 rounded-full font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50"
+        transloco="common.create"></span>
+    </div>
+
+    <a *ngIf="model.status_finish==5" (click)="openpopupview()">
+        <ng-container *ngIf="actionEnum === 3; else notView">
+            <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase w-max
+            py-0.5 px-3 rounded-full font-semibold bg-orange-100 text-orange-800 dark:bg-orange-600 dark:text-orange-50"
+            transloco="common.return"></span>
+        </ng-container>
+        <ng-template #notView>
+        <div class="py-4 leading-none text-orange-700 whitespace-nowrap">
+            <div class="text-sm font-medium text-secondary">{{model.from_user_name}}</div>
+            <div class="mt-2 text-md font-medium">
+                <span transloco="common.return"></span>
+            </div>
+            <div class="mt-2 text-sm">
+                <span>{{'common.reason' | transloco}}: {{ model.last_note }}</span>
+            </div>
+        </div>
+        </ng-template>
+    </a>
+
+    <a *ngIf="model.status_finish==4" (click)="openpopupview()">
+        <ng-container *ngIf="actionEnum === 3; else notView">
+            <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase w-max
+            py-0.5 px-3 rounded-full font-semibold bg-red-100 text-red-800 dark:bg-red-600 dark:text-red-50"
+                  transloco="common.cancel"></span>
+        </ng-container>
+        <ng-template #notView>
+            <div class="py-4 leading-none text-red-600 whitespace-nowrap">
+                <div class="mt-2 text-md font-medium">
+                    <span transloco="common.cancel"></span>
+                </div>
+                <div class="mt-2 text-sm">
+                    <span>{{'common.reason' | transloco}}: {{ model.last_note }}</span>
+                </div>
+            </div>
+        </ng-template>
+    </a>
+
+    <a *ngIf="model.status_finish==6" (click)="openpopupview()">
+        <ng-container *ngIf="actionEnum === 3; else notView">
+            <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase w-max
+            py-0.5 px-3 rounded-full font-semibold bg-accent-100 text-accent-800 dark:bg-accent-600 dark:text-accent-50"
+                  transloco="common.close"></span>
+        </ng-container>
+        <ng-template #notView>
+        <div class="py-4 leading-none text-accent-700 whitespace-nowrap">
+            <div class="mt-2 text-md font-medium">
+                <span transloco="common.close"></span>
+            </div>
+            <div class="mt-2 text-sm">
+                <span>{{'common.reason' | transloco}}: {{ model.last_note }}</span>
+            </div>
+        </div>
+        </ng-template>
+    </a>
+
+    <a *ngIf="model.status_finish==2" (click)="openpopupview()">
+        <ng-container *ngIf="actionEnum === 3; else notView">
+            <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase w-max
+            py-0.5 px-3 rounded-full font-semibold bg-blue-100 text-blue-800 dark:bg-blue-600 dark:text-blue-50"
+                  transloco="common.waiting_approval"></span>
+        </ng-container>
+        <ng-template #notView>
+        <div class="py-4 leading-none text-blue-700 whitespace-nowrap">
+            <div class="text-sm font-medium text-secondary">{{model.to_user_name}}</div>
+            <div class="mt-2 text-md font-medium">
+                <span transloco="common.waiting_approval"></span>
+            </div>
+        </div>
+        </ng-template>
+    </a>
+
+    <a *ngIf="model.status_finish==3" (click)="openpopupview()">
+        <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase w-max
+        py-0.5 px-3 rounded-full font-semibold bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50"
+        transloco="common.approved"></span>
+    </a>
+</div>

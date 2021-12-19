@@ -1,0 +1,41 @@
+/* ----------------------------------------------------------------------------------------------------- */
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+
+
+mat-dialog-container {
+    overflow-y: hidden !important;
+}
+
+.mainTable th, .mainTable td {
+    padding: 0 20px !important;
+    white-space: nowrap !important;
+}
+
+// Alert message
+.swal2-popup {
+    width: 26em !important;
+    height: 19em !important;
+    border-radius: 15px!important;
+
+}
+.swal2-icon {
+    transform: scale(0.8);
+}
+.swal2-icon.swal2-success {
+    border-color: #50cd89 !important;
+    color: #50cd89 !important;
+}
+.swal2-styled.swal2-confirm {
+    background-color: #4f46e5 !important;
+}
+
+
+// Custom width for mat-select-search
+.mat-select-search-input{
+    padding: 16px 0px 16px 16px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+

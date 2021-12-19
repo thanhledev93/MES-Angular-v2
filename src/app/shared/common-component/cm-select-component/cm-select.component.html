@@ -1,0 +1,15 @@
+<mat-form-field class="w-full">
+    <mat-label> {{ label | transloco }} {{ labelAddString | transloco }}<span style="color: #f1416c; font-style: italic; font-size: small" *ngFor="let item of errorModel | filter: 'key':keyError; index as i">
+         (<span *ngFor="let msg of item.value"> {{ msg | transloco }} </span>)
+    </span>
+    </mat-label>
+    <mat-select
+        [value]="value"
+        (selectionChange)="onChange($event)">
+        <mat-option *ngFor="let unit of listData"
+                    [value]="unit.id">{{unit.name}}</mat-option>
+        <mat-option *ngIf="listData?.length === 0">
+            Không có dữ liệu
+        </mat-option>
+    </mat-select>
+</mat-form-field>
