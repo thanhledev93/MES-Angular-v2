@@ -27,13 +27,18 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {commonModule} from "../../../../shared/common-component/common.module";
 import { InventoryReceivingPopupAddComponent } from './inventory_receiving/popup-add/popup-add.component';
 import {FuseFindByKeyPipeModule} from "../../../../../@fuse/pipes/find-by-key";
+import {InventoryDeliveryListComponent} from "./inventory_delivery/list/list.component";
+import {InventoryDeliveryComponent} from "./inventory_delivery/inventory-delivery.component";
 
 // @ts-ignore
 @NgModule({
     declarations: [
         InventoryReceivingComponent,
         InventoryReceivingListComponent,
-        InventoryReceivingPopupAddComponent
+        InventoryReceivingPopupAddComponent,
+
+        InventoryDeliveryComponent,
+        InventoryDeliveryListComponent
     ],
     imports: [
         RouterModule.forChild(inventoryRoutes),

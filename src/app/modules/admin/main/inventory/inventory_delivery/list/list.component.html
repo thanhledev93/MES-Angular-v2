@@ -1,0 +1,100 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row items-start sm:items-center sm:justify-between px-6 py-4 md:px-8 border-b bg-card dark:bg-transparent">
+
+        <!-- Loader-->
+        <div class="absolute inset-x-0 bottom-0"
+                *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+
+        <!-- Title -->
+        <div>
+            <div class="text-2xl font-extrabold tracking-tight leading-none">{{ 'NAV.inventory_delivery' | transloco }}</div>
+        </div>
+        <!-- Actions -->
+        <div class="mt-5 w-full sm:mt-0 sm:w-auto">
+            <button
+                    mat-flat-button
+                    [color]="'primary'">
+<!--                    (click)="openDialogComponent()">-->
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">{{ 'add' | transloco }}</span>
+            </button>
+        </div>
+    </div>
+    <div class="flex-auto h-full bg-gray-100 bg-card dark:bg-transparent px-6 overflow-y-scroll">
+        <!-- Main -->
+        <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8">
+            <div class="w-full mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">
+
+                    <!-- Search -->
+                    <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl overflow-hidden">
+                        <div class="flex flex-col flex-auto mt-2 overflow-x-auto p-6">
+                            <form [formGroup]="_form">
+                                <div class="grid sm:grid-cols-6 gap-x-5 w-full">
+                                    <div class="sm:col-span-6 md:col-span-4">
+                                        <cm-input type="text"
+                                                  formControlName="search"
+                                                  class="w-full"
+                                                  label="search"
+                                                  icon="heroicons_solid:search"
+                                                  placeholder="Nhập vào số phiếu">
+<!--                                                  [callbackChange]="filterByQuery.bind(this)">-->
+                                        </cm-input>
+                                    </div>
+                                    <div class="sm:col-span-6 md:col-span-2">
+                                        <cm_sys_approval_filter class="w-100"
+                                                                formControlName="approval_status">
+<!--                                                                [callbackChange]="filterByApprovalStatus.bind(this)">-->
+                                        </cm_sys_approval_filter>
+                                    </div>
+                                </div>
+                                <mat-accordion hideToggle>
+                                    <mat-expansion-panel [expanded]="expand" style="box-shadow: none !important"
+                                                         (opened)="panelOpenState = true"
+                                                         (closed)="panelOpenState = false">
+                                        <mat-expansion-panel-header class="pl-0">
+                                            <button
+                                                    (click)="toggleAdvanceSearch()">
+                                                <span style="color: #009ef7; font-weight: 500">{{panelOpenState ? 'Ẩn tìm kiếm nâng cao' : 'Tìm kiếm nâng cao'}}</span>
+                                            </button>
+                                        </mat-expansion-panel-header>
+                                        <div style="border-bottom: 1px solid #eff2f5; border-bottom-style: dashed; border-bottom-color: #e4e6ef"></div>
+                                        <div class="grid sm:grid-cols-6 gap-x-5 w-full mt-5">
+                                            <div class="sm:col-span-6 md:col-span-2">
+                                                <cm-select label="Nguồn"
+                                                           [listData]="list_type"
+                                                           formControlName="type">
+<!--                                                           [callbackChange]="filterByType.bind(this)">-->
+                                                </cm-select>
+                                            </div>
+
+                                            <div class="sm:col-span-6 md:col-span-2">
+                                                <cm-select label="Kho"
+                                                           [listData]="list_sys_warehouse"
+                                                           formControlName="sys_warehouse">
+<!--                                                           [callbackChange]="filterByWarehouse.bind(this)">-->
+                                                </cm-select>
+                                            </div>
+
+                                            <div class="sm:col-span-6 md:col-span-2">
+                                                <cm-select label="Loại phiếu nhập"
+                                                           [listData]="list_sys_delivery_type"
+                                                           formControlName="delivery_type">
+<!--                                                           [callbackChange]="filterByReceivingType.bind(this)">-->
+                                                </cm-select>
+                                            </div>
+                                        </div>
+
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

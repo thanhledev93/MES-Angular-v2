@@ -28,7 +28,8 @@
         <div class="flex-auto border-t -mt-px pt-4 sm:pt-6 my-8">
             <div class="w-full mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">
-                    <!-- Budget details -->
+
+                    <!-- Search -->
                     <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl overflow-hidden">
                         <div class="flex flex-col flex-auto mt-2 overflow-x-auto p-6">
                             <form [formGroup]="_form">
@@ -44,13 +45,10 @@
                                         </cm-input>
                                     </div>
                                     <div class="sm:col-span-6 md:col-span-2">
-                                        <cm-select class="w-100"
-                                                   label="Trạng thái duyệt"
-                                                   [initValue]="'-1'"
-                                                   [listData]="list_approval_status"
+                                        <cm_sys_approval_filter class="w-100"
                                                    formControlName="approval_status"
                                                    [callbackChange]="filterByApprovalStatus.bind(this)">
-                                        </cm-select>
+                                        </cm_sys_approval_filter>
                                     </div>
                                 </div>
 
@@ -100,7 +98,7 @@
                         </div>
                     </div>
 
-                    <!-- Budget details -->
+                    <!-- Main table -->
                     <div class="sm:col-span-6 flex flex-col flex-auto px-0 bg-card shadow rounded-2xl overflow-hidden">
                         <ng-container *ngIf="listData.length > 0; else noData">
                             <div class="flex flex-col flex-auto mt-2 overflow-x-auto sm:overflow-y-auto" cdkScrollable>
@@ -110,7 +108,6 @@
                                         [dataSource]="listData"
                                         [trackBy]="trackByFn">
 
-                                    <!-- Function -->
                                     <ng-container matColumnDef="function">
                                         <th class="min-w-30 text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -153,7 +150,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- Name -->
                                     <ng-container matColumnDef="name" sticky>
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -169,7 +165,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- Status finish -->
                                     <ng-container matColumnDef="status_finish">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -182,7 +177,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- Warehouse -->
                                     <ng-container matColumnDef="sys_warehouse_name">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -196,7 +190,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- Type -->
                                     <ng-container matColumnDef="type">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -210,7 +203,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- sys_receiving_type_name -->
                                     <ng-container matColumnDef="sys_receiving_type_name">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -224,7 +216,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- create_date -->
                                     <ng-container matColumnDef="create_date">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -238,7 +229,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- business_purchase_order_name -->
                                     <ng-container matColumnDef="business_purchase_order_name">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -254,7 +244,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- production_order_name -->
                                     <ng-container matColumnDef="production_order_name">
                                         <th class="text-md font-semibold text-secondary"
                                             mat-header-cell
@@ -271,7 +260,6 @@
                                         </td>
                                     </ng-container>
 
-                                    <!-- Note -->
                                     <ng-container matColumnDef="note">
                                         <th class="text-md font-semibold text-secondary"
                                                 mat-header-cell
@@ -297,6 +285,7 @@
                                 </table>
                             </div>
                         </ng-container>
+
                         <mat-paginator
                                 class="bg-transparent"
                                 [ngClass]="{'pointer-events-none': isLoading}"

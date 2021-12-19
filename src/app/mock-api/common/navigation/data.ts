@@ -15,6 +15,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon    : 'heroicons_outline:clipboard-list',
                 link : '/inventory_receiving_index'
             },
+            {
+                id      : 'inventory_delivery',
+                title   : 'NAV.inventory_delivery',
+                type    : 'basic',
+                icon    : 'heroicons_outline:clipboard',
+                link : '/inventory_delivery_index'
+            },
         ]
     },
 ];

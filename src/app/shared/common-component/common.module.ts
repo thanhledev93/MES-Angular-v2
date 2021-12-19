@@ -20,6 +20,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatTableModule} from "@angular/material/table";
 import {cm_sys_approval_buttonComponent} from "./cm-approval-status/cm_sys_approval_button.component";
 import {cm_sys_approval_popupComponent} from "./cm-approval-status/cm_sys_approval_popup.component";
+import {cm_sys_approval_filterComponent} from "./cm-approval-status/cm_sys_approval_filter.component";
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import {cm_sys_approval_popupComponent} from "./cm-approval-status/cm_sys_approv
         CmApprovalStatus,
         cm_sys_approval_status_popupComponent,
         cm_sys_approval_buttonComponent,
-        cm_sys_approval_popupComponent
+        cm_sys_approval_popupComponent,
+        cm_sys_approval_filterComponent
     ],
     imports: [
         MatIconModule,
@@ -57,7 +59,8 @@ import {cm_sys_approval_popupComponent} from "./cm-approval-status/cm_sys_approv
         CmApprovalStatus,
         cm_sys_approval_status_popupComponent,
         cm_sys_approval_buttonComponent,
-        cm_sys_approval_popupComponent
+        cm_sys_approval_popupComponent,
+        cm_sys_approval_filterComponent
     ]
 })
 
