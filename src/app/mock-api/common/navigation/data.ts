@@ -15,7 +15,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon    : 'heroicons_outline:clipboard-list',
                 link : '/inventory_receiving_index'
             },
-
             {
                 id      : 'inventory_item_line_up',
                 title   : 'NAV.inventory_item_line_up',
@@ -37,6 +36,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon    : 'heroicons_outline:calendar',
                 link : '/inventory_need_supplier_schedule_index'
             },
+
         ]
     },
 ];
