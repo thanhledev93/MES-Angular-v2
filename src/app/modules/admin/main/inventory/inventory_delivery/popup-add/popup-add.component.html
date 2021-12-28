@@ -135,7 +135,7 @@
                         <!-- Compose form -->
                         <form [formGroup]="_form">
 
-                            <div class="grid sm:grid-cols-6 md:gap-x-6 w-full">
+                            <div class="grid sm:grid-cols-6 md:gap-x-6 w-full" formGroupName="db">
                                 <div class="sm:col-span-6 md:col-span-3">
                                     <cm-input [label]="'so_phieu'" formControlName="name"
                                               [errorModel]="errorModel" [keyError]="'db.name'"></cm-input>
@@ -176,33 +176,24 @@
                         <form [formGroup]="_formItem">
                             <mat-tab-group (selectedIndexChange)="resetFormItem($event)" class="mt-8">
                                 <mat-tab *ngFor="let type of type_add; let index = index" [label]="type.name" class="p-6 sm:p-8 overflow-y-auto">
-                                    <div class="grid sm:grid-cols-6 gap-x-5 w-full">
-                                        <div class="sm:col-span-6" [ngClass]="{'md:col-span-6': type.id === 1,
-                                                                               'md:col-span-3': type.id !== 1}">
+                                    <div class="grid sm:grid-cols-5 gap-x-5 w-full">
+                                        <div class="sm:col-span-6" [ngClass]="{'md:col-span-4': type.id === 1,
+                                                                               'md:col-span-2': type.id !== 1}">
                                             <cm-select-server-side (objectChose)="item_chose = $event" label="Mặt hàng" formControlName="item" link="sys_item.ctr/getListUse/"
                                                                    [callbackChange]="bind_data_item_chose.bind(this)"></cm-select-server-side>
                                         </div>
 
-                                        <div *ngIf="type.id === 2" class="sm:col-span-6 md:col-span-3">
+                                        <div *ngIf="type.id === 2" class="sm:col-span-6 md:col-span-2">
                                             <cm-select-server-side (objectChose)="item_chose_specification = $event" label="Quy cách" formControlName="specification" [filterData]="_formItem.get('item').value"
                                                                    [callbackChange]="bind_data_specification_chose.bind(this)" link="sys_item_specification.ctr/getListUse/" ></cm-select-server-side>
                                         </div>
 
-                                        <div *ngIf="type.id === 3" class="sm:col-span-6 md:col-span-3">
+                                        <div *ngIf="type.id === 3" class="sm:col-span-6 md:col-span-2">
                                             <cm-select (objectChose)="item_chose_other_unit = $event" label="Đơn vị tính khác" value="-1" formControlName="otherUnit"
                                                        [listData]="listData_other_unit"></cm-select>
                                         </div>
 
-                                        <div class="sm:col-span-6 md:col-span-2">
-                                            <cm-select (objectChose)="position_chose = $event;" label="Vị trí" formControlName="id_warehouse_position"
-                                                       [callbackChange]="bind_data_position_chose.bind(this)" [listData]="list_position"></cm-select>
-                                        </div>
-
-                                        <div class="sm:col-span-6 md:col-span-2">
-                                            <cm-input [isDisabled]="true" label="Tồn kho" formControlName="stock"></cm-input>
-                                        </div>
-
-                                        <div class="sm:col-span-6 md:col-span-2">
+                                        <div class="sm:col-span-6 md:col-span-1">
                                             <cm-input type="number" label="Số lượng" formControlName="quantity"></cm-input>
                                         </div>
                                     </div>
@@ -247,9 +238,33 @@
                                             Chức năng
                                         </th>
                                         <td mat-cell *matCellDef="let data, index as i">
-                                           <button (click)="deleteDetail(i)" [color]="'warn'" mat-icon-button>
-                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
-                                           </button>
+                                             <span class="flex items-center">
+                                                    <button
+                                                            class="ml-4"
+                                                            mat-icon-button
+                                                            [matMenuTriggerFor]="headerMenu">
+                                                        <mat-icon
+                                                                [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                                                        <mat-menu #headerMenu>
+                                                            <button mat-menu-item (click)="addPosition(data, i)">
+                                                                <mat-icon [svgIcon]="'heroicons_outline:plus-circle'"
+                                                                          class="icon-size-5"></mat-icon>
+                                                                {{'Thêm vị trí' | transloco}}
+                                                            </button>
+
+                                                            <button mat-menu-item (click)="deleteDetail(i)" >
+                                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"
+                                                                          class="icon-size-5">
+                                                                </mat-icon>
+                                                                {{'system.delete' | transloco}}
+                                                            </button>
+                                                        </mat-menu>
+                                                    </button>
+                                                </span>
+
+<!--                                           <button (click)="deleteDetail(i)" [color]="'warn'" mat-icon-button>-->
+<!--                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>-->
+<!--                                           </button>-->
                                         </td>
                                     </ng-container>
 
@@ -285,13 +300,28 @@
                                             *matHeaderCellDef>
                                             {{ 'inventory.warehouse_position' | transloco }}
                                         </th>
-                                        <td mat-cell *matCellDef="let data">
-                                         {{ data.warehouse_position_name }}
-<!--                                            <nz-select ngModel="ASC-10">-->
-<!--                                                <nz-option nzValue="ASC-10" nzLabel="ASC-10"></nz-option>-->
-<!--                                                <nz-option nzValue="ASC-11" nzLabel="ASC-11"></nz-option>-->
-<!--                                                <nz-option nzValue="ASC-12" nzLabel="ASC-12"></nz-option>-->
-<!--                                            </nz-select>-->
+                                        <td mat-cell *matCellDef="let data; index as i">
+                                            <form [formGroup]="_form">
+                                                <nz-select class="min-w-30" [formControl]="this._form.get('list_item')['controls'][i].get('id_warehouse_position')" (ngModelChange)="getValueSelect($event, i)">
+                                                    <nz-option *ngFor="let p of _form.get('list_item').value[i].list_position" [nzValue]="p.id" [nzLabel]="p.name"></nz-option>
+                                                </nz-select>
+                                            </form>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Status finish -->
+                                    <ng-container matColumnDef="current_stock">
+                                        <th class="text-md font-semibold text-secondary"
+                                            mat-header-cell
+                                            *matHeaderCellDef>
+                                            {{ 'inventory.current_stock' | transloco }}
+                                        </th>
+                                        <td mat-cell *matCellDef="let data; index as i">
+                                            <form [formGroup]="_form">
+                                            <nz-input-group nzAddOnAfter="{{ data.sys_unit_main_name }}">
+                                                <input class="w-20" type="text" nz-input [formControl]="this._form.get('list_item')['controls'][i].get('quantity_ending_stocks')"/>
+                                            </nz-input-group>
+                                            </form>
                                         </td>
                                     </ng-container>
 
@@ -302,18 +332,22 @@
                                             *matHeaderCellDef>
                                             {{ 'quantity' | transloco }}
                                         </th>
-                                        <td mat-cell *matCellDef="let data">
+                                        <td mat-cell *matCellDef="let data; index as i">
                                             <ng-container *ngIf="data.db.type_add === 3; else unitMain">
-                                                <span class="flex items-end">{{ data.db.quantity_unit_main }} {{ data.sys_unit_main_name }}
-                                                    <mat-icon class="pt-2" svgIcon="heroicons_outline:arrow-sm-left"></mat-icon>
-                                                    {{data.db.quantity }} {{ data.sys_unit_name }}
-                                                </span>
+                                                <nz-input-group nzAddOnAfter="{{ data.sys_unit_name }}">
+                                                    <input class="w-20" type="text" nz-input [formControl]="this._form.get('list_item')['controls'][i].get('quantity')"/>
+                                                </nz-input-group>
+<!--                                                -->
+<!--                                                <span class="flex items-end">{{ data.db.quantity_unit_main }} {{ data.sys_unit_main_name }}-->
+<!--                                                    <mat-icon class="pt-2" svgIcon="heroicons_outline:arrow-sm-left"></mat-icon>-->
+<!--                                                    {{data.db.quantity }} {{ data.sys_unit_name }}-->
+<!--                                                </span>-->
                                             </ng-container>
                                             <ng-template #unitMain>
-                                                <span>{{ data.db.quantity_unit_main }} {{ data.sys_unit_main_name }} </span>
-<!--                                                <nz-input-group nzAddOnAfter="{{ data.sys_unit_main_name }}">-->
-<!--                                                    <input class="w-20" type="text" nz-input [(ngModel)]="data.db.quantity" />-->
-<!--                                                </nz-input-group>-->
+<!--                                                <span>{{ data.db.quantity_unit_main }} {{ data.sys_unit_main_name }} </span>-->
+                                                <nz-input-group nzAddOnAfter="{{ data.sys_unit_main_name }}">
+                                                    <input class="w-20" type="text" nz-input [formControl]="this._form.get('list_item')['controls'][i].get('quantity')"/>
+                                                </nz-input-group>
                                             </ng-template>
                                         </td>
                                     </ng-container>

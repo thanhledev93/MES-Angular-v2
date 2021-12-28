@@ -348,7 +348,9 @@
         "inventory_item_line_up": "Sắp xếp hàng trong kho",
         "lined_up": "Đã sắp xếp",
         "not_line_up": "Chưa sắp xếp",
-        "line_up_status": "Tình trạng"
+        "line_up_status": "Tình trạng",
+
+        "current_stock": "Tồn tức thời"
     },
 
     "maintenance": {

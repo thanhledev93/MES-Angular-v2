@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
+    FormArray,
     FormBuilder,
     Validators
 } from '@angular/forms';
@@ -33,9 +34,9 @@ import Swal from 'sweetalert2';
 })
 
 export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent implements OnInit, OnDestroy, AfterViewInit {
-    value = 2000;
+
     //table
-    dataTableColumns: string[] = ['function', 'item', 'specification', 'warehouse_position', 'quantity', 'type_add'];
+    dataTableColumns: string[] = ['function', 'item', 'specification', 'warehouse_position', 'current_stock', 'quantity', 'type_add'];
     @ViewChild(MatPaginator) private _matPaginator: MatPaginator;
     dataSource = new MatTableDataSource<any>([]);
 
@@ -63,6 +64,9 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
     addItem: any = {
         db: {}
     };
+
+    // ---
+    list_item_position: any[];
 
     /**
      * Constructor
@@ -159,35 +163,38 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
 
         // Create the form
         this._form = this._formBuilder.group({
-            id: [''],
-            id_delivery_type: [],
-            id_warehouse: [],
-            export_date: [''],
-            name: [''],
-            object_: [''],
-            note: [''],
-            type: ['']
+            db: this._formBuilder.group({
+                id: [''],
+                id_delivery_type: [],
+                id_warehouse: [],
+                id_production_order: [''],
+                export_date: [''],
+                name: [''],
+                object_: [''],
+                note: [''],
+                type: [''],
+            }),
+
+            list_item: this._formBuilder.array([]),
         });
 
-        this._form.patchValue(this.record.db)
+        this._form.patchValue(this.record);
 
-        this._form.get('type').patchValue(this.list_type[this.record.db.type -1].name) // Chuyen type number --> text de load mac dinh
+        // Chuyen type number --> text de load mac dinh
+        this._form.get('db.type').setValue(this.list_type[this.record.db.type -1].name);
 
         this._formItem = this._formBuilder.group({
-            item: [],
-            specification: [],
-            otherUnit: [],
-            id_warehouse_position: [''],
-            quantity: [''],
-            stock: ['']
+            item: [''],
+            specification: [''],
+            otherUnit: [''],
+            quantity: [0]
         });
 
-        this._formItem.patchValue({
-            quantity: [0],
-        })
-
-
         if (this.addItem.db.type_add === undefined) this.addItem.db.type_add = 1;
+
+        // Neu co list items se push vao form array list_item
+        this.renderListItemFormArr();
+
     }
 
     ngAfterViewInit() {
@@ -200,26 +207,96 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+    renderListItemFormArr(): void {
 
-    /**
-     * Create and Update
-     */
-    save(): void {
-        console.log('type: ', this._form.get('type').value);
-
-        // Get the department object
-        const record = {
-            db: this._form.getRawValue(),
-            list_item: this.dataSource.data
-        };
-
-        record.db.type = this.list_type.find(d => d.name == this._form.get('type').value).id;
+        //reset list_item
+        this._form.get('list_item')['controls'] = [];
 
 
-        this.saveRecord(record);
+        // Setup the emails form array
+        const listItemFormGroups = [];
+
+        if (this.dataSource.data.length > 0) {
+            this.dataSource.data.forEach(item => {
+                // Create an email form group
+                listItemFormGroups.push(
+                    this._formBuilder.group({
+                        item: [item.db.id_item],
+                        specification: [item.db.id_specification],
+                        otherUnit: [item.db.otherUnit],
+
+                        // #
+                        quantity: [item.db.quantity],
+                        id_warehouse_position: [''],
+                        quantity_ending_stocks: [{value: 0, disabled: true}],
+                        list_position: [[]]
+                    })
+                );
+            })
+        }
+
+        // Add the email form groups to the emails form array
+        listItemFormGroups.forEach((itemFormGroup) => {
+            (this._form.get('list_item') as FormArray).push(itemFormGroup);
+        });
+    }
+
+    getPosition() {
+
+        // re-render list_item for table
+        this.renderListItemFormArr();
+
+        console.log('after render: ', this._form.get('list_item'))
+
+        this.list_item_position = [];
+
+        // Duyet tung item trong table
+        this.dataSource.data.forEach((item,index) => {
+            this.list_item_position.push(
+                {
+                    id_item: item.db.id_item,
+                    id_specification: item.db.id_specification
+                }
+            )
+        })
+
+        console.log('list_item_position; ', this.list_item_position)
+
+        this._baseComponentService.getListResolveData('sys_warehouse_position.ctr/getListExitedPosition/',
+            {
+                id_warehouse: this._form.get('db.id_warehouse').value,
+                list_item: this.list_item_position
+            }
+        ).subscribe((resp) => {
+            if( resp ) {
+
+                this._form.get('list_item').value.forEach(item => {
+
+                    // Iterate through them
+                    resp.forEach((e) => {
+
+                        if (item.item === e.db.id_item && item.specification === e.db.id_specification) {
+                            let position: any = {};
+                            position.id_item = e.db.id_item;
+                            position.id_specification = e.id_specification;
+                            position.id = e.id_warehouse_position;
+                            position.name = e.name_warehouse_position;
+                            position.quantity_ending_stocks = e.db.quantity_ending_stocks;
+
+                            item.list_position.push(position);
+
+                        }
+                    })
+
+                })
+
+
+            }
+        })
     }
 
     addDetail() {
+
         // db list_data
         // {
         //     "id_item": "item_10001",
@@ -240,9 +317,10 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
         if (this.dataSource.data.find(d => d.db.id_item === this.item_chose.id) && this.dataSource.data.find(d =>
             d.db.id_specification === this.item_chose_specification?.id) && this.dataSource.data.find(d =>
             d.db.id_warehouse_position === this.position_chose?.id)) {
-            // Display alert
-            Swal.fire('Đã tồn tại', '', 'error');
 
+            // Open the confirmation dialog
+            this._baseComponentService.confirmationDialog('Đã tồn tại',
+                'Mặt hàng đã được thêm vào danh sách!')
             return;
         }
 
@@ -254,10 +332,6 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
         this.addItem.sys_unit_name = this.item_chose.unit_name;
         this.addItem.sys_item_name = this.item_chose.name;
         this.addItem.db.type_add = this.currentTypeAdd + 1;
-        this.addItem.db.id_warehouse_position = this.position_chose.id;
-        this.addItem.warehouse_position_name = this.position_chose.name;
-
-
 
         if (this.addItem.db.type_add == 1) {
             this.addItem.db.quantity_unit_main = this.addItem.db.quantity;
@@ -279,13 +353,72 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
             this.addItem.db.quantity_unit_main = this.item_chose_other_unit.conversion_factor * this.addItem.db.quantity;
         }
 
-        // add item into first index in table and render record table
-        this.dataSource.data.unshift(this.addItem);
-        this.dataSource.data = [...this.dataSource.data]
+        // Add item into table and get position
+        this.addPosition(this.addItem, this.dataSource.data.length);
+
 
         this.addItem = {
             db: {}
         };
+
+        console.log('this.dataSource.data: ', this.dataSource.data)
+    }
+
+    /**
+     * Create and Update
+     */
+    save(): void {
+
+        // {
+        //     "id": 20304,
+        //     "quantity": 100,
+        //     "id_warehouse_position": "position_10002"
+        // }
+
+        let record = this._form.getRawValue();
+        let list_itemUpdated = [];
+
+        console.log('record.list_item: ', record.list_item)
+        if (this.dataSource.data.length > 0) {
+            list_itemUpdated = record.list_item.map((d, index) => {
+
+                const updatedItem = {
+                    db: {...this.dataSource.data[index].db,
+                        quantity: d.quantity,
+                        id_warehouse_position: d.id_warehouse_position,
+                    }
+                };
+                return updatedItem;
+            });
+        }
+
+        // Chuyen type text --> number
+        record.db.type = this.list_type.find(d => d.name == this._form.get('db.type').value).id;
+        record.list_item = list_itemUpdated;
+
+        console.log('list_itemUpdated: ', list_itemUpdated)
+        console.log('record; ', record);
+
+        this.saveRecord(record);
+
+    }
+
+    /**
+     * Remove the email field
+     *
+     * @param index
+     */
+    removePositionField(index: number): void
+    {
+        console.log('remove index: ', index)
+
+        // Get form array for emails
+        const positionFormArray = this._form.get('list_item') as FormArray;
+
+        // Remove the email field
+        positionFormArray.removeAt(index);
+
+        console.log('delete list_item: ',  this._form.get('list_item').value)
 
     }
 
@@ -296,39 +429,37 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
 
         // this._formItem.reset();
 
-        this._formItem.patchValue({
-            quantity: [0],
-            stock: ['']
-        })
+        // this._formItem.patchValue({
+        //     quantity: [0],
+        //     stock: ['']
+        // })
     }
 
     bind_data_item_chose(): void {
 
         // reset specification of item
-        this._formItem.patchValue({
-            specification: [''],
-            id_warehouse_position: [''],
-            stock: [''],
-            quantity: [0]
-        })
+        // this._formItem.patchValue({
+        //     specification: [''],
+        //     id_warehouse_position: [''],
+        //     stock: [''],
+        //     quantity: [0]
+        // })
 
         if (this.currentTypeAdd === 2) {
             this.getOtherUnit();
         }
 
-        this.getPosition()
     }
 
     bind_data_specification_chose(): void {
-        this._formItem.patchValue({
-            id_warehouse_position: [''],
-            stock: ['']
-        })
+        // this._formItem.patchValue({
+        //     id_warehouse_position: [''],
+        //     stock: ['']
+        // })
 
-        this.getPosition()
     }
     bind_data_position_chose(): void {
-       this._formItem.get('stock').patchValue(this.position_chose.quantity_ending_stocks);
+       // this._formItem.get('stock').patchValue(this.position_chose.quantity_ending_stocks);
     }
 
     deleteDetail(index: number) {
@@ -337,6 +468,8 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
 
         this.dataSource.data.splice(currentIndex, 1);
         this.dataSource.data = [...this.dataSource.data];
+
+        this.removePositionField(index);
     }
 
     getOtherUnit() {
@@ -346,35 +479,6 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
             this.listData_other_unit = resp;
         });
     }
-    getPosition() {
-
-
-        this._baseComponentService.getListResolveData('sys_warehouse_position.ctr/getListExitedPosition/',
-            {
-                id_warehouse: this._form.get('id_warehouse').value,
-                list_item: [{id_item: this._formItem.get('item').value, id_specification: this._formItem.get('specification').value}]
-
-            }
-        ).subscribe((resp) => {
-            this.list_position = [];
-
-            if(resp){
-                resp.forEach((e) => {
-                    let position: any = {};
-
-                    position.id = e.id_warehouse_position;
-                    position.name = e.name_warehouse_position;
-                    position.quantity_ending_stocks = e.db.quantity_ending_stocks;
-
-                    this.list_position.push(position);
-                });
-
-                console.log('this.list_position: ', this.list_position)
-            }
-        });
-
-    }
-
 
     onChangePage(pe:PageEvent) {
         this.pageIndex = pe.pageIndex;
@@ -390,5 +494,44 @@ export class InventoryDeliveryPopupAddComponent extends BasePopupAddComponent im
     trackByFn(index: number, item: any): any
     {
         return item.id || index;
+    }
+
+    getValueSelect(change: any, index: any) {
+        console.log('index: ', index)
+        console.log('changed: ', this._form.get('list_item')['controls'][index])
+
+        // Lay quantity_ending_stocks tai position duoc chon
+       const i = this._form.get('list_item').value[index].list_position.findIndex(d => d.id === change);
+       const quantity_ending_stocks = this._form.get('list_item').value[index].list_position[i].quantity_ending_stocks
+
+        // this._form.get('list_item')['controls'][index].get('id_warehouse_position').setValue(change);
+        this._form.get('list_item')['controls'][index].get('quantity_ending_stocks').setValue(quantity_ending_stocks)
+
+    }
+
+    addPosition(data: any, index: number) {
+
+        this.dataSource.data.splice(index + 1, 0, data);
+        this.dataSource.data = [...this.dataSource.data];
+
+        // Create an email form group
+        const positionFormGroup = this._formBuilder.group({
+            item: [data.db.id_item],
+            specification: [data.db.id_specification],
+            otherUnit: [data.db.otherUnit],
+
+            // #
+            quantity: [data.db.quantity],
+            id_warehouse_position: [''],
+            quantity_ending_stocks: [{value: 0, disabled: true}],
+            list_position: [[]]
+        });
+
+        // Add the email form group to the emails form array
+        (this._form.get('list_item') as FormArray).push(positionFormGroup);
+
+        // re-render list_position
+        this.getPosition();
+
     }
 }

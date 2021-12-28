@@ -34,8 +34,8 @@ export class InventoryItemLineUpListComponent extends BaseListComponent implemen
     list_line_up_status: any;
     list_sys_warehouse: any;
 
-    dataTableColumns: string[] = ['function', 'name', 'sys_warehouse', 'sys_item', 'sys_item_specification',
-        'quantity', 'note', 'line_up_status'];
+    dataTableColumns: string[] = ['function', 'name', 'line_up_status', 'sys_warehouse', 'sys_item', 'sys_item_specification',
+        'quantity', 'note'];
 
 
     /**

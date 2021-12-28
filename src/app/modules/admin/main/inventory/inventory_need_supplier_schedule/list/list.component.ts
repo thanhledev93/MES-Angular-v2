@@ -284,6 +284,7 @@ export class InventoryNeedSupplierScheduleListComponent extends BaseListComponen
         this.list_item.forEach((item, index) => {
             item.db.id_production_order_need_supplier_schedule = item.db.id;
             item.db.quantity = item.db.quantity - item.db.quantity_export;
+            item.list_position = []  // render positions in table for each item
         });
 
         if (model !== null && pos !== null) {
@@ -294,6 +295,7 @@ export class InventoryNeedSupplierScheduleListComponent extends BaseListComponen
                 db: {
                     id: 0,
                     type: 1,
+                    id_production_order: this.list_item[0].db.id_production_order,
                     export_date:new Date(),
                 },
                 list_item: this.list_item
